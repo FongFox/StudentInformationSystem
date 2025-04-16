@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### Secrets ###
-spring-boot-app/src/main/resources/application-development.properties
+!**/src/main/resources/application-development.properties
