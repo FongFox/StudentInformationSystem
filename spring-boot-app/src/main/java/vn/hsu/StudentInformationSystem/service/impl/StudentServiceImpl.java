@@ -56,10 +56,13 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.count();
     }
 
-//    @PostConstruct
     public void initSampleData() {
         handleCreateStudent(new Student("Phong", "Gia Nguyên", "Trần", "123456"));
         handleCreateStudent( new Student("An", "Văn", "Nguyễn", "123456"));
         handleCreateStudent(new Student("Tú", "", "Lê", "123456"));
+    }
+
+    public void handleDeleteStudentById(long id) {
+        this.studentRepository.deleteById(id);
     }
 }

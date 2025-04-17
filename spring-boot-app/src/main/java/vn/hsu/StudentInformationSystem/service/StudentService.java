@@ -8,4 +8,6 @@ public interface StudentService {
     public long handleCheckStudentQuantity();
 
     public void initSampleData();
+
+    public void handleDeleteStudentById(long id);
 }
