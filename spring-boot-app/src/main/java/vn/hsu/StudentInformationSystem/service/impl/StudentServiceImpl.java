@@ -1,6 +1,7 @@
 package vn.hsu.StudentInformationSystem.service.impl;
 
 import org.springframework.stereotype.Service;
+import vn.hsu.StudentInformationSystem.model.PasswordDto;
 import vn.hsu.StudentInformationSystem.model.Student;
 import vn.hsu.StudentInformationSystem.repository.StudentRepository;
 import vn.hsu.StudentInformationSystem.service.StudentService;
@@ -77,5 +78,31 @@ public class StudentServiceImpl implements StudentService {
 
     public List<Student> handleFetchStudentList() {
         return this.studentRepository.findAll();
+    }
+
+    public Student handleUpdateStudent(long id, Student student) {
+        Student studentDb = handleFetchStudentById(id);
+        if (studentDb == null) {
+            return null;
+        } else {
+            studentDb.setPassword(student.getPassword());
+        }
+
+        return this.studentRepository.save(studentDb);
+    }
+
+    public Student handleUpdateStudentPassword(long id, String password) {
+        Student studentDb = handleFetchStudentById(id);
+        if (studentDb == null) {
+            return null;
+        } else {
+            studentDb.setPassword(password);
+        }
+
+        return this.studentRepository.save(studentDb);
+    }
+
+    public String handleConvertPasswordDtoToPassword(PasswordDto passwordDto) {
+        return passwordDto.getPassword();
     }
 }
