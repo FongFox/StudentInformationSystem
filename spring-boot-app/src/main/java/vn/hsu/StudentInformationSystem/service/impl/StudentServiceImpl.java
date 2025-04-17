@@ -6,6 +6,8 @@ import vn.hsu.StudentInformationSystem.repository.StudentRepository;
 import vn.hsu.StudentInformationSystem.service.StudentService;
 
 import java.text.Normalizer;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Service
@@ -31,12 +33,12 @@ public class StudentServiceImpl implements StudentService {
 
     private String generateBaseUsername(Student student) {
         String first = removeDiacritics(student.getFirstName().toLowerCase());
-        String lastInitial = removeDiacritics(student.getLastName().substring(0,1).toLowerCase());
+        String lastInitial = removeDiacritics(student.getLastName().substring(0, 1).toLowerCase());
 
         StringBuilder middleInitials = new StringBuilder();
         for (String word : student.getMiddleName().split(" ")) {
             if (!word.isBlank()) {
-                middleInitials.append(word.substring(0,1).toLowerCase());
+                middleInitials.append(word.substring(0, 1).toLowerCase());
             }
         }
 
@@ -44,7 +46,9 @@ public class StudentServiceImpl implements StudentService {
     }
 
     private String removeDiacritics(String input) {
-        if(input == null) { return ""; }
+        if (input == null) {
+            return "";
+        }
         // Step 1: Convert to decomposed Unicode (e.g. ú → u + ́ )
         String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
         // Step 2: Remove diacritic marks (accents)
@@ -58,11 +62,20 @@ public class StudentServiceImpl implements StudentService {
 
     public void initSampleData() {
         handleCreateStudent(new Student("Phong", "Gia Nguyên", "Trần", "123456"));
-        handleCreateStudent( new Student("An", "Văn", "Nguyễn", "123456"));
+        handleCreateStudent(new Student("An", "Văn", "Nguyễn", "123456"));
         handleCreateStudent(new Student("Tú", "", "Lê", "123456"));
     }
 
     public void handleDeleteStudentById(long id) {
         this.studentRepository.deleteById(id);
+    }
+
+    public Student handleFetchStudentById(long id) {
+        Optional<Student> studentOptional = this.studentRepository.findById(id);
+        return studentOptional.isPresent() ? studentOptional.get() : null;
+    }
+
+    public List<Student> handleFetchStudentList() {
+        return this.studentRepository.findAll();
     }
 }

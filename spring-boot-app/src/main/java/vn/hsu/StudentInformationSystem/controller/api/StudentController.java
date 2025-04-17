@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.*;
 import vn.hsu.StudentInformationSystem.model.Student;
 import vn.hsu.StudentInformationSystem.service.StudentService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/students")
 public class StudentController {
@@ -14,13 +16,13 @@ public class StudentController {
     }
 
     @GetMapping()
-    public String getStudentList() {
-        return "Get Student List Feature!";
+    public List<Student> getStudentList() {
+        return this.studentService.handleFetchStudentList();
     }
 
     @GetMapping("{id}")
-    public String getStudentDetail(@PathVariable long id) {
-        return "Get Student Detail Feature!";
+    public Student getStudentDetail(@PathVariable long id) {
+        return this.studentService.handleFetchStudentById(id);
     }
 
     @PostMapping()
