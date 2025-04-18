@@ -3,8 +3,8 @@ package vn.hsu.StudentInformationSystem.model;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "students")
-public class Student {
+@Table(name = "users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -23,10 +23,10 @@ public class Student {
 
     private String password;
 
-    public Student() {
+    public User() {
     }
 
-    public Student(String firstName, String lastName, String middleName, String password) {
+    public User(String firstName, String lastName, String middleName, String password) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.middleName = middleName;

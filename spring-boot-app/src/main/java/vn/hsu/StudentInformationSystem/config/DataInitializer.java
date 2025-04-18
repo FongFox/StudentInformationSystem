@@ -2,9 +2,9 @@ package vn.hsu.StudentInformationSystem.config;
 
 //@Configuration
 public class DataInitializer {
-//    private final StudentServiceImpl studentService;
+//    private final UserServiceImpl studentService;
 //
-//    public DataInitializer(StudentServiceImpl studentService) {
+//    public DataInitializer(UserServiceImpl studentService) {
 //        this.studentService = studentService;
 //    }
 //
@@ -18,14 +18,14 @@ public class DataInitializer {
 //            initialDefaultStudents();
 //
 //            System.out.println("Application Still running at: ");
-//            System.out.println("localhost:8080/api/v1");
+//            System.out.println("localhost:8080/rest/v1");
 //        };
 //    }
 //
 //    private void initialDefaultStudents() {
 //        long numberDBStudent = studentService.handleCheckStudentQuantity();
 //        if(numberDBStudent == 0) {
-//            Student newStudent = new Student("An", "Văn", "Nguyễn", "an.nv1", "123456");
+//            User newStudent = new User("An", "Văn", "Nguyễn", "an.nv1", "123456");
 //            this.studentService.handleCreateStudent(newStudent);
 //            System.out.println("Add default student complete!");
 //        } else {
