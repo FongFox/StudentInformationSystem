@@ -1,35 +1,38 @@
 package vn.hsu.StudentInformationSystem.config;
 
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import vn.hsu.StudentInformationSystem.service.impl.UserServiceImpl;
+
 //@Configuration
 public class DataInitializer {
-//    private final UserServiceImpl studentService;
-//
-//    public DataInitializer(UserServiceImpl studentService) {
-//        this.studentService = studentService;
-//    }
-//
-//    @Bean
-//    CommandLineRunner commandLineRunner() {
-//        return args -> {
-//            // Đoạn code sẽ được chạy khi ứng dụng khởi động
-//            System.out.println("Application has started!");
-//
-//            // Ví dụ: Thực hiện khởi tạo dữ liệu
-//            initialDefaultStudents();
-//
-//            System.out.println("Application Still running at: ");
-//            System.out.println("localhost:8080/rest/v1");
-//        };
-//    }
-//
-//    private void initialDefaultStudents() {
-//        long numberDBStudent = studentService.handleCheckStudentQuantity();
-//        if(numberDBStudent == 0) {
-//            User newStudent = new User("An", "Văn", "Nguyễn", "an.nv1", "123456");
-//            this.studentService.handleCreateStudent(newStudent);
-//            System.out.println("Add default student complete!");
-//        } else {
-//            System.out.println("Already have default student!");
-//        }
-//    }
+    private final UserServiceImpl userService;
+
+    public DataInitializer(UserServiceImpl userService) {
+        this.userService = userService;
+    }
+
+    @Bean
+    CommandLineRunner commandLineRunner() {
+        return args -> {
+            // Đoạn code sẽ được chạy khi ứng dụng khởi động
+            System.out.println("Application has started!");
+
+            // Ví dụ: Thực hiện khởi tạo dữ liệu
+            initialDefaultUsers();
+
+            System.out.println("Application Still running at: ");
+            System.out.println("localhost:8080/api/v1");
+        };
+    }
+
+    private void initialDefaultUsers() {
+        long numberDBUser = userService.handleCheckUserQuantity();
+        if(numberDBUser == 0) {
+            this.initialDefaultUsers();
+            System.out.println("Add default users complete!");
+        } else {
+            System.out.println("Already have default users!");
+        }
+    }
 }
