@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import vn.hsu.StudentInformationSystem.model.PasswordDto;
 import vn.hsu.StudentInformationSystem.model.User;
 import vn.hsu.StudentInformationSystem.service.UserService;
+import vn.hsu.StudentInformationSystem.service.mapper.PasswordMapper;
 
 import java.util.List;
 
@@ -13,9 +14,11 @@ import java.util.List;
 @RequestMapping("api/v1/users")
 public class UserController {
     private final UserService userService;
+    private final PasswordMapper passwordMapper;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, PasswordMapper passwordMapper) {
         this.userService = userService;
+        this.passwordMapper = passwordMapper;
     }
 
     @GetMapping()
@@ -46,7 +49,7 @@ public class UserController {
 
     @PatchMapping("{id}/pwd")
     public ResponseEntity<User> updateUserPassword(@PathVariable long id, @RequestBody PasswordDto passwordDto) {
-        String password = this.userService.handleConvertPasswordDtoToPassword(passwordDto);
+        String password = this.passwordMapper.handleConvertPasswordDtoToPassword(passwordDto);
         User responseUser = this.userService.handleUpdateUserPassword(id, password);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseUser);

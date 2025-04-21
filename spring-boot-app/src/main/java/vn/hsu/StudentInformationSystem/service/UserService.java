@@ -10,8 +10,6 @@ public interface UserService {
 
     public long handleCheckUserQuantity();
 
-    public void initSampleData();
-
     public void handleDeleteUserById(long id);
 
     public User handleFetchUserById(long id);
@@ -22,5 +20,5 @@ public interface UserService {
 
     public User handleUpdateUserPassword(long id, String password);
 
-    public String handleConvertPasswordDtoToPassword(PasswordDto passwordDto);
+    public void initSampleData();
 }

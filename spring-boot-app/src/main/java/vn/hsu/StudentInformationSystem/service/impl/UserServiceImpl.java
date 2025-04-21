@@ -1,6 +1,7 @@
 package vn.hsu.StudentInformationSystem.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import vn.hsu.StudentInformationSystem.model.PasswordDto;
 import vn.hsu.StudentInformationSystem.model.User;
@@ -15,21 +16,27 @@ import java.util.regex.Pattern;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User handleCreateUser(User newUser) {
-        // Step 1: Save the User temporarily to get an auto-generated ID
+        //Hash password for new user
+        String hashPassword = this.passwordEncoder.encode(newUser.getPassword());
+        newUser.setPassword(hashPassword);
+
+        //Save the User temporarily to get an auto-generated ID
         User savedUser = this.userRepository.save(newUser);
 
-        // Step 2: Generate the username using naming format
+        //Generate the username using naming format
         String baseUsername = generateBaseUsername(savedUser);
         String finalUsername = baseUsername + savedUser.getId();
         savedUser.setUsername(finalUsername);
 
-        // Step 3: Save again with final username
+        //Save again with final username
         return this.userRepository.save(savedUser);
     }
 
@@ -62,12 +69,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.count();
     }
 
-    public void initSampleData() {
-        handleCreateUser(new User("Phong", "Gia Nguyên", "Trần", "123456"));
-        handleCreateUser(new User("An", "Văn", "Nguyễn", "123456"));
-        handleCreateUser(new User("Tú", "", "Lê", "123456"));
-    }
-
     public void handleDeleteUserById(long id) {
 //        this.userRepository.deleteById(id);
         User userDb = handleFetchUserById(id);
@@ -90,12 +91,16 @@ public class UserServiceImpl implements UserService {
 
     public User handleUpdateUserPassword(long id, String password) {
         User userDb = handleFetchUserById(id);
-        userDb.setPassword(password);
+        String hashPassword = this.passwordEncoder.encode(password);
+        userDb.setPassword(hashPassword);
 
         return this.userRepository.save(userDb);
     }
 
-    public String handleConvertPasswordDtoToPassword(PasswordDto passwordDto) {
-        return passwordDto.getPassword();
+    public void initSampleData() {
+        handleCreateUser(new User("Phong", "Gia Nguyên", "Trần", "123456"));
+        handleCreateUser(new User("An", "Văn", "Nguyễn", "123456"));
+        handleCreateUser(new User("Tú", "Lê", "", "123456"));
+        handleCreateUser(new User("A", "Nguyễn", "Văn", "123456"));
     }
 }
