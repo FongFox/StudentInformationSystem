@@ -2,9 +2,10 @@ package vn.hsu.StudentInformationSystem.config;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import vn.hsu.StudentInformationSystem.service.impl.UserServiceImpl;
 
-//@Configuration
+@Configuration
 public class DataInitializer {
     private final UserServiceImpl userService;
 
@@ -29,7 +30,7 @@ public class DataInitializer {
     private void initialDefaultUsers() {
         long numberDBUser = userService.handleCheckUserQuantity();
         if(numberDBUser == 0) {
-            this.initialDefaultUsers();
+            this.userService.initSampleData();
             System.out.println("Add default users complete!");
         } else {
             System.out.println("Already have default users!");

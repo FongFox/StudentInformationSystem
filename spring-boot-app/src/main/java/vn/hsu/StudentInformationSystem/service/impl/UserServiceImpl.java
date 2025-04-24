@@ -102,5 +102,6 @@ public class UserServiceImpl implements UserService {
         handleCreateUser(new User("An", "Văn", "Nguyễn", "123456"));
         handleCreateUser(new User("Tú", "Lê", "", "123456"));
         handleCreateUser(new User("A", "Nguyễn", "Văn", "123456"));
+        handleCreateUser(new User("Sơn", "Nguyễn", "Hồng", "123456"));
     }
 }

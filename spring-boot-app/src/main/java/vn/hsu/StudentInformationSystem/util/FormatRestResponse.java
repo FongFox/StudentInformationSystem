@@ -29,15 +29,14 @@ public class FormatRestResponse implements ResponseBodyAdvice {
         int status = servletResponse.getStatus();
         RestResponse<Object> restResponse = new RestResponse<Object>();
 
-//        if(body instanceof String) {
-//            return body;
-//        }
-
-        if(status >= 400) {
-            //case error
+        if (body instanceof String) {
             return body;
         }
-        else {
+
+        if (status >= 400) {
+            //case error
+            return body;
+        } else {
             // case success
             restResponse.setStatus(status);
             restResponse.setMessage("Call API Success!");
