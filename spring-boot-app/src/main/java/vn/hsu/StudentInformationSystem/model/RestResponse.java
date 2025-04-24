@@ -1,10 +1,13 @@
 package vn.hsu.StudentInformationSystem.model;
 
 public class RestResponse<T> {
-    private int status;
-    private Object message;
-    private String error;
-    private T Data;
+    private int status; //status code
+
+    private Object message; // success message
+    private Object errorMessage; // error message
+
+    private Object error; // error detail
+    private T Data; // success data
 
     public RestResponse() {
     }
@@ -25,11 +28,19 @@ public class RestResponse<T> {
         this.message = message;
     }
 
-    public String getError() {
+    public Object getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(Object errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public Object getError() {
         return error;
     }
 
-    public void setError(String error) {
+    public void setError(Object error) {
         this.error = error;
     }
 

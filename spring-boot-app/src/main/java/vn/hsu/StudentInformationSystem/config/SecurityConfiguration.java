@@ -12,6 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -19,11 +20,15 @@ public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(
+        http
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(
                         authz -> authz
-                                .requestMatchers("/api/hello").permitAll()
-                                .anyRequest().authenticated()
+                                // .requestMatchers("/api/hello").permitAll()
+                                // .anyRequest().authenticated()
+                                .anyRequest().permitAll()
                 )
+                .formLogin(formLogin -> formLogin.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }

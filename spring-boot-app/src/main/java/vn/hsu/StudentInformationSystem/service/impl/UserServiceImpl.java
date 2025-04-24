@@ -3,7 +3,6 @@ package vn.hsu.StudentInformationSystem.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import vn.hsu.StudentInformationSystem.model.PasswordDto;
 import vn.hsu.StudentInformationSystem.model.User;
 import vn.hsu.StudentInformationSystem.repository.UserRepository;
 import vn.hsu.StudentInformationSystem.service.UserService;
@@ -15,6 +14,7 @@ import java.util.regex.Pattern;
 
 @Service
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -83,11 +83,21 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    public User handleFetchUserByUsername(String username) {
+        // TODO Auto-generated method stub
+        Optional<User> UserOptional = this.userRepository.findByUsername(username);
+
+        return UserOptional.orElseThrow(
+                () -> new EntityNotFoundException("User with username or password not found")
+        );
+    }
+
     public List<User> handleFetchUserList() {
         return this.userRepository.findAll();
     }
 
-    public void handleUpdateUser() {}
+    public void handleUpdateUser() {
+    }
 
     public User handleUpdateUserPassword(long id, String password) {
         User userDb = handleFetchUserById(id);
@@ -98,7 +108,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public void initSampleData() {
-        handleCreateUser(new User("Phong", "Gia Nguyên", "Trần", "123456"));
+        handleCreateUser(new User("Phong", "Trần", "Gia Nguyên", "123456"));
         handleCreateUser(new User("An", "Văn", "Nguyễn", "123456"));
         handleCreateUser(new User("Tú", "Lê", "", "123456"));
         handleCreateUser(new User("A", "Nguyễn", "Văn", "123456"));

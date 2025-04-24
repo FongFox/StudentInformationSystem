@@ -6,6 +6,7 @@ import vn.hsu.StudentInformationSystem.model.User;
 import java.util.List;
 
 public interface UserService {
+
     public User handleCreateUser(User newUser);
 
     public long handleCheckUserQuantity();
@@ -13,6 +14,8 @@ public interface UserService {
     public void handleDeleteUserById(long id);
 
     public User handleFetchUserById(long id);
+
+    public User handleFetchUserByUsername(String username);
 
     public List<User> handleFetchUserList();
 
