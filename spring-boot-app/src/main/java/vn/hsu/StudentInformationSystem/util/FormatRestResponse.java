@@ -8,7 +8,6 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
-import vn.hsu.StudentInformationSystem.model.RestResponse;
 
 @RestControllerAdvice
 public class FormatRestResponse implements ResponseBodyAdvice {
@@ -42,7 +41,7 @@ public class FormatRestResponse implements ResponseBodyAdvice {
         if (body instanceof String) {
             return body;
         }
-        
+
         if (status < 400) {
             // case success
             restResponse.setStatus(status);

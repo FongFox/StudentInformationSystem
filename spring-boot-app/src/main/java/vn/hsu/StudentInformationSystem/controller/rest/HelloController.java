@@ -1,4 +1,4 @@
-package vn.hsu.StudentInformationSystem.controller;
+package vn.hsu.StudentInformationSystem.controller.rest;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

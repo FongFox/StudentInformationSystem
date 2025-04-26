@@ -1,4 +1,4 @@
-package vn.hsu.StudentInformationSystem.model;
+package vn.hsu.StudentInformationSystem.model.dto;
 
 public class PasswordDto {
     private String password;

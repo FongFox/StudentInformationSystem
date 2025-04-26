@@ -23,6 +23,7 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
     public User handleCreateUser(User newUser) {
         //Hash password for new user
         String hashPassword = this.passwordEncoder.encode(newUser.getPassword());
@@ -65,16 +66,19 @@ public class UserServiceImpl implements UserService {
         return pattern.matcher(normalized).replaceAll("");
     }
 
+    @Override
     public long handleCheckUserQuantity() {
         return userRepository.count();
     }
 
+    @Override
     public void handleDeleteUserById(long id) {
 //        this.userRepository.deleteById(id);
         User userDb = handleFetchUserById(id);
         this.userRepository.delete(userDb);
     }
 
+    @Override
     public User handleFetchUserById(long id) {
         Optional<User> UserOptional = this.userRepository.findById(id);
 
@@ -83,6 +87,7 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    @Override
     public User handleFetchUserByUsername(String username) {
         // TODO Auto-generated method stub
         Optional<User> UserOptional = this.userRepository.findByUsername(username);
@@ -92,13 +97,16 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    @Override
     public List<User> handleFetchUserList() {
         return this.userRepository.findAll();
     }
 
+    @Override
     public void handleUpdateUser() {
     }
 
+    @Override
     public User handleUpdateUserPassword(long id, String password) {
         User userDb = handleFetchUserById(id);
         String hashPassword = this.passwordEncoder.encode(password);
@@ -107,6 +115,7 @@ public class UserServiceImpl implements UserService {
         return this.userRepository.save(userDb);
     }
 
+    @Override
     public void initSampleData() {
         handleCreateUser(new User("Phong", "Trần", "Gia Nguyên", "123456"));
         handleCreateUser(new User("An", "Văn", "Nguyễn", "123456"));

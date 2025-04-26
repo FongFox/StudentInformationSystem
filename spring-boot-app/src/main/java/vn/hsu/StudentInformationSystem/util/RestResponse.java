@@ -1,4 +1,4 @@
-package vn.hsu.StudentInformationSystem.model;
+package vn.hsu.StudentInformationSystem.util;
 
 public class RestResponse<T> {
     private int status; //status code

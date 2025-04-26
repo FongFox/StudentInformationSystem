@@ -1,11 +1,11 @@
-package vn.hsu.StudentInformationSystem.model;
+package vn.hsu.StudentInformationSystem.model.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
 public class LoginDto {
     @NotBlank(message = "username can't be blank!")
     private String username;
-    
+
     @NotBlank(message = "password can't be blank!")
     private String password;
 
