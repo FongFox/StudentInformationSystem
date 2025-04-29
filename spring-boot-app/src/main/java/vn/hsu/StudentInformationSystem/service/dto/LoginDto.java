@@ -1,4 +1,4 @@
-package vn.hsu.StudentInformationSystem.model.dto;
+package vn.hsu.StudentInformationSystem.service.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

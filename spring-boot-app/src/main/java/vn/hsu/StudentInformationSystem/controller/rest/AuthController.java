@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vn.hsu.StudentInformationSystem.model.dto.LoginDto;
-import vn.hsu.StudentInformationSystem.model.dto.ResLoginDto;
+import vn.hsu.StudentInformationSystem.service.dto.LoginDto;
+import vn.hsu.StudentInformationSystem.service.dto.ResLoginDto;
 import vn.hsu.StudentInformationSystem.util.SecurityUtils;
 
 @RestController
@@ -42,7 +42,7 @@ public class AuthController {
         //create access token
         String accessToken = this.securityUtils.createToken(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        
+
         ResLoginDto resLoginDto = new ResLoginDto();
         resLoginDto.setAccessToken(accessToken);
 
