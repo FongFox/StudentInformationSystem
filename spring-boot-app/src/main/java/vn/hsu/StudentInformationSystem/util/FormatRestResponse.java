@@ -8,7 +8,6 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
-import vn.hsu.StudentInformationSystem.model.RestResponse;
 
 @RestControllerAdvice
 public class FormatRestResponse implements ResponseBodyAdvice {
@@ -29,19 +28,28 @@ public class FormatRestResponse implements ResponseBodyAdvice {
         int status = servletResponse.getStatus();
         RestResponse<Object> restResponse = new RestResponse<Object>();
 
-//        if(body instanceof String) {
+//        if (status >= 400) {
+//            //case error
 //            return body;
+//        } else {
+//            // case success
+//            restResponse.setStatus(status);
+//            restResponse.setMessage("Call API Success!");
+//            restResponse.setData(body);
 //        }
 
-        if(status >= 400) {
-            //case error
+        if (body instanceof String) {
             return body;
         }
-        else {
+
+        if (status < 400) {
             // case success
             restResponse.setStatus(status);
             restResponse.setMessage("Call API Success!");
             restResponse.setData(body);
+        } else {
+            //case error
+            return body;
         }
 
         return restResponse;

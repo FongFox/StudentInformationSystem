@@ -3,9 +3,9 @@ package vn.hsu.StudentInformationSystem.controller.rest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.hsu.StudentInformationSystem.model.PasswordDto;
 import vn.hsu.StudentInformationSystem.model.User;
 import vn.hsu.StudentInformationSystem.service.UserService;
+import vn.hsu.StudentInformationSystem.service.dto.PasswordDto;
 import vn.hsu.StudentInformationSystem.service.mapper.PasswordMapper;
 
 import java.util.List;

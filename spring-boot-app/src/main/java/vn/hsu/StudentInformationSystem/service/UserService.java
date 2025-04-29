@@ -1,24 +1,26 @@
 package vn.hsu.StudentInformationSystem.service;
 
-import vn.hsu.StudentInformationSystem.model.PasswordDto;
 import vn.hsu.StudentInformationSystem.model.User;
 
 import java.util.List;
 
 public interface UserService {
-    public User handleCreateUser(User newUser);
 
-    public long handleCheckUserQuantity();
+    User handleCreateUser(User newUser);
 
-    public void handleDeleteUserById(long id);
+    long handleCheckUserQuantity();
 
-    public User handleFetchUserById(long id);
+    void handleDeleteUserById(long id);
 
-    public List<User> handleFetchUserList();
+    User handleFetchUserById(long id);
 
-    public void handleUpdateUser();
+    User handleFetchUserByUsername(String username);
 
-    public User handleUpdateUserPassword(long id, String password);
+    List<User> handleFetchUserList();
 
-    public void initSampleData();
+    void handleUpdateUser();
+
+    User handleUpdateUserPassword(long id, String password);
+
+    void initSampleData();
 }

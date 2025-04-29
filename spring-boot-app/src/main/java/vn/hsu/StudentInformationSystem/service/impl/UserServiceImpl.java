@@ -3,7 +3,6 @@ package vn.hsu.StudentInformationSystem.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import vn.hsu.StudentInformationSystem.model.PasswordDto;
 import vn.hsu.StudentInformationSystem.model.User;
 import vn.hsu.StudentInformationSystem.repository.UserRepository;
 import vn.hsu.StudentInformationSystem.service.UserService;
@@ -15,6 +14,7 @@ import java.util.regex.Pattern;
 
 @Service
 public class UserServiceImpl implements UserService {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -23,6 +23,7 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
     public User handleCreateUser(User newUser) {
         //Hash password for new user
         String hashPassword = this.passwordEncoder.encode(newUser.getPassword());
@@ -65,16 +66,19 @@ public class UserServiceImpl implements UserService {
         return pattern.matcher(normalized).replaceAll("");
     }
 
+    @Override
     public long handleCheckUserQuantity() {
         return userRepository.count();
     }
 
+    @Override
     public void handleDeleteUserById(long id) {
 //        this.userRepository.deleteById(id);
         User userDb = handleFetchUserById(id);
         this.userRepository.delete(userDb);
     }
 
+    @Override
     public User handleFetchUserById(long id) {
         Optional<User> UserOptional = this.userRepository.findById(id);
 
@@ -83,12 +87,26 @@ public class UserServiceImpl implements UserService {
         );
     }
 
+    @Override
+    public User handleFetchUserByUsername(String username) {
+        // TODO Auto-generated method stub
+        Optional<User> UserOptional = this.userRepository.findByUsername(username);
+
+        return UserOptional.orElseThrow(
+                () -> new EntityNotFoundException("User with username or password not found")
+        );
+    }
+
+    @Override
     public List<User> handleFetchUserList() {
         return this.userRepository.findAll();
     }
 
-    public void handleUpdateUser() {}
+    @Override
+    public void handleUpdateUser() {
+    }
 
+    @Override
     public User handleUpdateUserPassword(long id, String password) {
         User userDb = handleFetchUserById(id);
         String hashPassword = this.passwordEncoder.encode(password);
@@ -97,10 +115,12 @@ public class UserServiceImpl implements UserService {
         return this.userRepository.save(userDb);
     }
 
+    @Override
     public void initSampleData() {
-        handleCreateUser(new User("Phong", "Gia Nguyên", "Trần", "123456"));
+        handleCreateUser(new User("Phong", "Trần", "Gia Nguyên", "123456"));
         handleCreateUser(new User("An", "Văn", "Nguyễn", "123456"));
         handleCreateUser(new User("Tú", "Lê", "", "123456"));
         handleCreateUser(new User("A", "Nguyễn", "Văn", "123456"));
+        handleCreateUser(new User("Sơn", "Nguyễn", "Hồng", "123456"));
     }
 }

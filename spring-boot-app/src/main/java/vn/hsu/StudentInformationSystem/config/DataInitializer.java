@@ -2,10 +2,12 @@ package vn.hsu.StudentInformationSystem.config;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import vn.hsu.StudentInformationSystem.service.impl.UserServiceImpl;
 
-//@Configuration
+@Configuration
 public class DataInitializer {
+
     private final UserServiceImpl userService;
 
     public DataInitializer(UserServiceImpl userService) {
@@ -22,14 +24,14 @@ public class DataInitializer {
             initialDefaultUsers();
 
             System.out.println("Application Still running at: ");
-            System.out.println("localhost:8080/api/v1");
+            System.out.println("localhost:8080/api");
         };
     }
 
     private void initialDefaultUsers() {
         long numberDBUser = userService.handleCheckUserQuantity();
-        if(numberDBUser == 0) {
-            this.initialDefaultUsers();
+        if (numberDBUser == 0) {
+            this.userService.initSampleData();
             System.out.println("Add default users complete!");
         } else {
             System.out.println("Already have default users!");
