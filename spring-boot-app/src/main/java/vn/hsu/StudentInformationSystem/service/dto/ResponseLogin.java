@@ -1,9 +1,9 @@
 package vn.hsu.StudentInformationSystem.service.dto;
 
-public class ResLoginDto {
+public class ResponseLogin {
     private String accessToken;
 
-    public ResLoginDto() {
+    public ResponseLogin() {
     }
 
     public String getAccessToken() {

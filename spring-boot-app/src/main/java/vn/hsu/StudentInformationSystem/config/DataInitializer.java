@@ -3,15 +3,15 @@ package vn.hsu.StudentInformationSystem.config;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import vn.hsu.StudentInformationSystem.service.impl.UserServiceImpl;
+import vn.hsu.StudentInformationSystem.model.Student;
+import vn.hsu.StudentInformationSystem.service.StudentService;
 
 @Configuration
 public class DataInitializer {
+    private final StudentService studentService;
 
-    private final UserServiceImpl userService;
-
-    public DataInitializer(UserServiceImpl userService) {
-        this.userService = userService;
+    public DataInitializer(StudentService studentService) {
+        this.studentService = studentService;
     }
 
     @Bean
@@ -21,20 +21,22 @@ public class DataInitializer {
             System.out.println("Application has started!");
 
             // Ví dụ: Thực hiện khởi tạo dữ liệu
-            initialDefaultUsers();
+            initialDefaultStudents();
 
             System.out.println("Application Still running at: ");
             System.out.println("localhost:8080/api");
         };
     }
 
-    private void initialDefaultUsers() {
-        long numberDBUser = userService.handleCheckUserQuantity();
+    private void initialDefaultStudents() {
+        long numberDBUser = this.studentService.handleCheckUserQuantity();
         if (numberDBUser == 0) {
-            this.userService.initSampleData();
+            // Todo
+            this.studentService.initSampleData();
             System.out.println("Add default users complete!");
         } else {
             System.out.println("Already have default users!");
         }
     }
+
 }

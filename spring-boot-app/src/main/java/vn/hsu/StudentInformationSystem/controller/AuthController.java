@@ -1,4 +1,4 @@
-package vn.hsu.StudentInformationSystem.controller.rest;
+package vn.hsu.StudentInformationSystem.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -11,14 +11,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vn.hsu.StudentInformationSystem.service.dto.LoginDto;
-import vn.hsu.StudentInformationSystem.service.dto.ResLoginDto;
+import vn.hsu.StudentInformationSystem.service.dto.LoginRequest;
+import vn.hsu.StudentInformationSystem.service.dto.ResponseLogin;
 import vn.hsu.StudentInformationSystem.util.SecurityUtils;
 
 @RestController
 @RequestMapping("api/auth")
 public class AuthController {
-
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityUtils securityUtils;
 
@@ -28,10 +27,10 @@ public class AuthController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<ResLoginDto> login(@Valid @RequestBody LoginDto loginDto) {
+    public ResponseEntity<ResponseLogin> login(@Valid @RequestBody LoginRequest loginRequest) {
         //Nạp input gồm username/password vào Security
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                loginDto.getUsername(), loginDto.getPassword()
+                loginRequest.getUsername(), loginRequest.getPassword()
         );
 
         //xác thực người dùng => cần viết hàm loadUserByUsername
@@ -43,9 +42,9 @@ public class AuthController {
         String accessToken = this.securityUtils.createToken(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        ResLoginDto resLoginDto = new ResLoginDto();
-        resLoginDto.setAccessToken(accessToken);
+        ResponseLogin responseLogin = new ResponseLogin();
+        responseLogin.setAccessToken(accessToken);
 
-        return ResponseEntity.status(HttpStatus.OK).body(resLoginDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseLogin);
     }
 }

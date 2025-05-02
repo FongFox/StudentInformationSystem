@@ -2,14 +2,14 @@ package vn.hsu.StudentInformationSystem.service.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class LoginDto {
+public class LoginRequest {
     @NotBlank(message = "username can't be blank!")
     private String username;
 
     @NotBlank(message = "password can't be blank!")
     private String password;
 
-    public LoginDto() {
+    public LoginRequest() {
     }
 
     public String getUsername() {
@@ -27,5 +27,4 @@ public class LoginDto {
     public void setPassword(String password) {
         this.password = password;
     }
-
 }

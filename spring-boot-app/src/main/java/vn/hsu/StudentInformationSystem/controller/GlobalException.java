@@ -1,4 +1,4 @@
-package vn.hsu.StudentInformationSystem.controller.rest.error;
+package vn.hsu.StudentInformationSystem.controller;
 
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import vn.hsu.StudentInformationSystem.util.RestResponse;
+import vn.hsu.StudentInformationSystem.service.dto.RestResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class GlobalException {
     public ResponseEntity<RestResponse<Object>> handleTypeMismatch(Exception exception) {
         RestResponse<Object> restResponse = new RestResponse<Object>();
         restResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-        restResponse.setErrorMessage("Call API Failed!");
+        restResponse.setMessage("Call API Failed!");
         restResponse.setError(exception.getMessage());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(restResponse);
@@ -40,7 +40,7 @@ public class GlobalException {
 
         RestResponse<Object> restResponse = new RestResponse<Object>();
         restResponse.setStatus(HttpStatus.BAD_REQUEST.value());
-        restResponse.setErrorMessage(ex.getBody().getDetail());
+        restResponse.setMessage(ex.getBody().getDetail());
 
 //        List<String> errors = fieldErrors.stream().map(f -> f.getDefaultMessage()).collect(Collectors.toList());
         List<String> errors = new ArrayList<>();
@@ -51,5 +51,4 @@ public class GlobalException {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(restResponse);
     }
-
 }

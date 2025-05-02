@@ -6,29 +6,27 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import vn.hsu.StudentInformationSystem.service.UserService;
+import vn.hsu.StudentInformationSystem.model.Student;
+import vn.hsu.StudentInformationSystem.service.StudentService;
 
 import java.util.Collections;
 
 @Component("userDetailsService")
 public class UserDetailsCustomImpl implements UserDetailsService {
+    private final StudentService studentService;
 
-    private final UserService userService;
-
-    public UserDetailsCustomImpl(UserService userService) {
-        this.userService = userService;
+    public UserDetailsCustomImpl(StudentService studentService) {
+        this.studentService = studentService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // TODO Auto-generated method stub
-        vn.hsu.StudentInformationSystem.model.User user = this.userService.handleFetchUserByUsername(username);
+        Student student = this.studentService.handleFetchStudentByUsername(username);
 
         return new User(
-                user.getUsername(),
-                user.getPassword(),
+                student.getUsername(),
+                student.getPassword(),
                 Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER"))
         );
     }
-
 }

@@ -76,6 +76,7 @@ public class SecurityConfiguration {
     ) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                         authz -> authz
                                 .requestMatchers("/api/hello", "/api/auth/login").permitAll()
@@ -106,5 +107,4 @@ public class SecurityConfiguration {
                 SecurityUtils.JWT_ALGORITHM.getName()
         );
     }
-
 }

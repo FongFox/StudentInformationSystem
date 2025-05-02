@@ -1,10 +1,9 @@
-package vn.hsu.StudentInformationSystem.util;
+package vn.hsu.StudentInformationSystem.service.dto;
 
-public class RestResponse<T> {
+public class RestResponse <T>{
     private int status; //status code
 
     private Object message; // success message
-    private Object errorMessage; // error message
 
     private Object error; // error detail
     private T Data; // success data
@@ -26,14 +25,6 @@ public class RestResponse<T> {
 
     public void setMessage(Object message) {
         this.message = message;
-    }
-
-    public Object getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(Object errorMessage) {
-        this.errorMessage = errorMessage;
     }
 
     public Object getError() {
