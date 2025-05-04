@@ -1,11 +1,16 @@
 package vn.hsu.StudentInformationSystem.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "students")
+@Setter
+@Getter
 public class Student {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +29,7 @@ public class Student {
 
     private String password;
 
-    @Column(name = "refresh_token",columnDefinition = "TEXT")
+    @Column(name = "refresh_token", columnDefinition = "TEXT")
     private String refreshToken;
 
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
@@ -37,6 +42,9 @@ public class Student {
     private List<Tuition> tuitionList;
 
     public Student() {
+        this.courseList = new ArrayList<>();
+        this.photocopyTransactionList = new ArrayList<>();
+        this.tuitionList = new ArrayList<>();
     }
 
     public Student(long code, String fullName, String username, String password) {
@@ -44,85 +52,9 @@ public class Student {
         this.fullName = fullName;
         this.username = username;
         this.password = password;
-    }
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public long getCode() {
-        return code;
-    }
-
-    public void setCode(long code) {
-        this.code = code;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
-
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public long getPhotocopyBalance() {
-        return photocopyBalance;
-    }
-
-    public void setPhotocopyBalance(long photocopyBalance) {
-        this.photocopyBalance = photocopyBalance;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    public List<Course> getCourseList() {
-        return courseList;
-    }
-
-    public void setCourseList(List<Course> courseList) {
-        this.courseList = courseList;
-    }
-
-    public List<PhotocopyTransaction> getPhotocopyTransactionList() {
-        return photocopyTransactionList;
-    }
-
-    public void setPhotocopyTransactionList(List<PhotocopyTransaction> photocopyTransactionList) {
-        this.photocopyTransactionList = photocopyTransactionList;
-    }
-
-    public List<Tuition> getTuitionList() {
-        return tuitionList;
-    }
-
-    public void setTuitionList(List<Tuition> tuitionList) {
-        this.tuitionList = tuitionList;
+        this.courseList = new ArrayList<>();
+        this.photocopyTransactionList = new ArrayList<>();
+        this.tuitionList = new ArrayList<>();
     }
 }

@@ -5,9 +5,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestCookieException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -22,11 +24,25 @@ public class GlobalException {
             MethodArgumentTypeMismatchException.class,
             EntityNotFoundException.class,
             UsernameNotFoundException.class,
-            BadCredentialsException.class
+            BadCredentialsException.class,
+            JwtException.class,
+            MissingRequestCookieException.class
     })
-    public ResponseEntity<RestResponse<Object>> handleTypeMismatch(Exception exception) {
+    public ResponseEntity<RestResponse<Object>> handleException(Exception exception) {
+        HttpStatus status;
+
+        if (exception instanceof EntityNotFoundException || exception instanceof UsernameNotFoundException) {
+            status = HttpStatus.NOT_FOUND;
+        } else if (exception instanceof BadCredentialsException || exception instanceof JwtException) {
+            status = HttpStatus.UNAUTHORIZED;
+        } else if (exception instanceof MethodArgumentTypeMismatchException) {
+            status = HttpStatus.BAD_REQUEST;
+        } else {
+            status = HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
         RestResponse<Object> restResponse = new RestResponse<Object>();
-        restResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        restResponse.setStatus(status.value());
         restResponse.setMessage("Call API Failed!");
         restResponse.setError(exception.getMessage());
 

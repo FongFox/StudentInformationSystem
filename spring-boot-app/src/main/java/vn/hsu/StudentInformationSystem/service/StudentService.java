@@ -11,11 +11,15 @@ public interface StudentService {
 
     Student handleFetchStudentByUsername(String username);
 
+    Student handleFetchStudentByUsernameAndRefreshToken(String username, String token);
+
     List<Student> handleFetchStudentList();
 
     void handleUpdateStudentPassword(long id, String password);
 
     long handleCheckUserQuantity();
+
+    void handleUpdateStudentToken(String token, String username);
 
     void initSampleData();
 }

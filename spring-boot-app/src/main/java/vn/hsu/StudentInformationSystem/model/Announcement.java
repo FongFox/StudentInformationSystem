@@ -1,11 +1,13 @@
 package vn.hsu.StudentInformationSystem.model;
 
 import jakarta.persistence.*;
-
-import java.time.Instant;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "announcements")
+@Getter
+@Setter
 public class Announcement {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,29 +19,5 @@ public class Announcement {
     private String linkURL;
 
     public Announcement() {
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getLinkURL() {
-        return linkURL;
-    }
-
-    public void setLinkURL(String linkURL) {
-        this.linkURL = linkURL;
     }
 }

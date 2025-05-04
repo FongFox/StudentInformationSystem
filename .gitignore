@@ -8,3 +8,5 @@ SIS-ERD.xlsx
 
 spring-boot-app/spring-boot-app.zip
 spring-boot-app-refactor
+
+spring-boot-app/src/main/resources/application-prod.properties

@@ -1,13 +1,16 @@
 package vn.hsu.StudentInformationSystem.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
 @Table(name = "courses")
+@Getter
+@Setter
 public class Course {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,69 +38,5 @@ public class Course {
     private Student student;
 
     public Course() {
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public double getGrade() {
-        return grade;
-    }
-
-    public void setGrade(double grade) {
-        this.grade = grade;
-    }
-
-    public int getSemester() {
-        return semester;
-    }
-
-    public void setSemester(int semester) {
-        this.semester = semester;
-    }
-
-    public LocalDate getFinalExamDate() {
-        return finalExamDate;
-    }
-
-    public void setFinalExamDate(LocalDate finalExamDate) {
-        this.finalExamDate = finalExamDate;
-    }
-
-    public LocalTime getFinalExamTime() {
-        return finalExamTime;
-    }
-
-    public void setFinalExamTime(LocalTime finalExamTime) {
-        this.finalExamTime = finalExamTime;
-    }
-
-    public Student getStudent() {
-        return student;
-    }
-
-    public void setStudent(Student student) {
-        this.student = student;
     }
 }

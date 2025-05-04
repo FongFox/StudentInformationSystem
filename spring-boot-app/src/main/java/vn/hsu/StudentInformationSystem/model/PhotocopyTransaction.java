@@ -1,12 +1,15 @@
 package vn.hsu.StudentInformationSystem.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.Instant;
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "photocopy_transactions")
+@Setter
+@Getter
 public class PhotocopyTransaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,37 +27,5 @@ public class PhotocopyTransaction {
     private Student student;
 
     public PhotocopyTransaction() {
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public long getAmount() {
-        return amount;
-    }
-
-    public void setAmount(long amount) {
-        this.amount = amount;
-    }
-
-    public Student getStudent() {
-        return student;
-    }
-
-    public void setStudent(Student student) {
-        this.student = student;
     }
 }

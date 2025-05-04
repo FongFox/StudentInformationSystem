@@ -48,7 +48,16 @@ public class StudentServiceImpl implements StudentService {
         Optional<Student> studentOptional = this.studentRepository.findByUsername(username);
 
         return studentOptional.orElseThrow(
-                () -> new EntityNotFoundException("Student with username or password not found")
+                () -> new EntityNotFoundException("Student with username not found")
+        );
+    }
+
+    @Override
+    public Student handleFetchStudentByUsernameAndRefreshToken(String username, String token) {
+        Optional<Student> studentOptional = this.studentRepository.findByUsernameAndRefreshToken(username, token);
+
+        return studentOptional.orElseThrow(
+                () -> new EntityNotFoundException("Student with username or refresh token not found")
         );
     }
 
@@ -67,8 +76,18 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public void handleUpdateStudentToken(String token, String username) {
+        Student currentStudent = this.handleFetchStudentByUsername(username);
+        currentStudent.setRefreshToken(token);
+
+        this.studentRepository.save(currentStudent);
+    }
+
+    @Override
     public void initSampleData() {
-        handleCreateStudent(new Student(22002581, "Trần Gia Nguyên Phong", "phong.tgn02581s", "123456"));
+        handleCreateStudent(new Student(22002579, "User", "user", "123456"));
+        handleCreateStudent(new Student(22002580, "Student", "student", "123456"));
+        handleCreateStudent(new Student(22002575, "Trần Gia Nguyên Phong", "phong.tgn02575", "123456"));
         handleCreateStudent(new Student(22002582, "Student Trần", "student.t02582", "123456"));
     }
 }
