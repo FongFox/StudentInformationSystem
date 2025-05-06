@@ -3,13 +3,16 @@ package vn.hsu.StudentInformationSystem.service;
 import vn.hsu.StudentInformationSystem.model.Student;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface StudentService {
-    Student handleCreateStudent(Student student);
+    void handleCreateStudent(Student student);
 
     Student handleFetchStudentById(long id);
 
     Student handleFetchStudentByUsername(String username);
+
+    Optional<Student> handleFetchStudentOptionalByUsername(String username);
 
     Student handleFetchStudentByUsernameAndRefreshToken(String username, String token);
 
@@ -21,5 +24,4 @@ public interface StudentService {
 
     void handleUpdateStudentToken(String token, String username);
 
-    void initSampleData();
 }

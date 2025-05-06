@@ -16,12 +16,13 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(nullable = true)
     private long code;
 
     @Column(name = "full_name")
     private String fullName;
 
-    @Column(name = "photocopy_balance")
+    @Column(name = "photocopy_balance", nullable = true)
     private long photocopyBalance;
 
     @Column(name = "user_name")

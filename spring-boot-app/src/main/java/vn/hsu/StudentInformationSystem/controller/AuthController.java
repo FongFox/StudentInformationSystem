@@ -77,17 +77,6 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.OK).header(HttpHeaders.SET_COOKIE, responseCookie.toString()).body(loginResponse);
     }
 
-    @GetMapping("account")
-    public ResponseEntity<StudentProfileResponse> fetchAccount() {
-        String username = SecurityUtils.getCurrentUserLogin()
-                .orElseThrow(() -> new EntityNotFoundException("Student with username not found"));
-
-        Student dbStudent = this.studentService.handleFetchStudentByUsername(username);
-        StudentProfileResponse studentProfileResponse = this.studentMapper.toProfile(dbStudent);
-
-        return ResponseEntity.status(HttpStatus.OK).body(studentProfileResponse);
-    }
-
     @GetMapping("refresh")
     public ResponseEntity<LoginResponse> fetchRefreshToken(@CookieValue(name = "refreshToken") String refreshToken) {
         //check is data valid
@@ -148,7 +137,7 @@ public class AuthController {
                 .path("/")
                 .maxAge(0)
                 .build();
-        
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .header(HttpHeaders.SET_COOKIE, deleteSpringCookie.toString())

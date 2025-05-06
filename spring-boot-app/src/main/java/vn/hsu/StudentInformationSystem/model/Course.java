@@ -20,15 +20,26 @@ public class Course {
 
     private String name;
 
-    private double grade;
+    private int credit;
 
-    private int semester;
+    @Column(nullable = true)
+    private long price;
+
+    @Column(nullable = true)
+    private double grade;
 
     @Column(name = "final_exam_date")
     private LocalDate finalExamDate;
 
     @Column(name = "final_exam_time")
     private LocalTime finalExamTime;
+
+    @ManyToOne()
+    @JoinColumn(
+            name = "semester_id",
+            foreignKey = @ForeignKey(name = "fk_course_semester")
+    )
+    private Semester semester;
 
     @ManyToOne
     @JoinColumn(
@@ -38,5 +49,12 @@ public class Course {
     private Student student;
 
     public Course() {
+    }
+
+    public Course(String code, String name, int credit, long price) {
+        this.code = code;
+        this.name = name;
+        this.credit = credit;
+        this.price = price;
     }
 }

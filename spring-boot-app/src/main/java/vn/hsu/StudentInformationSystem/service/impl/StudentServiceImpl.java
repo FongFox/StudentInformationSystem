@@ -21,16 +21,13 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public Student handleCreateStudent(Student student) {
+    public void handleCreateStudent(Student student) {
         //Hash password for new user
         String hashPassword = this.passwordEncoder.encode(student.getPassword());
         student.setPassword(hashPassword);
 
-        //Save the User temporarily to get an auto-generated ID
-        Student savedStudent = this.studentRepository.save(student);
-
         //Save again with final username
-        return this.studentRepository.save(savedStudent);
+        this.studentRepository.save(student);
     }
 
     @Override
@@ -53,6 +50,11 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
+    public Optional<Student> handleFetchStudentOptionalByUsername(String username) {
+        return this.studentRepository.findByUsername(username);
+    }
+
+    @Override
     public Student handleFetchStudentByUsernameAndRefreshToken(String username, String token) {
         Optional<Student> studentOptional = this.studentRepository.findByUsernameAndRefreshToken(username, token);
 
@@ -68,6 +70,12 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public void handleUpdateStudentPassword(long id, String password) {
+        Student dbStudent = this.handleFetchStudentById(id);
+
+        String hashPassword = this.passwordEncoder.encode(password);
+        dbStudent.setPassword(hashPassword);
+
+        this.studentRepository.save(dbStudent);
     }
 
     @Override
@@ -83,11 +91,4 @@ public class StudentServiceImpl implements StudentService {
         this.studentRepository.save(currentStudent);
     }
 
-    @Override
-    public void initSampleData() {
-        handleCreateStudent(new Student(22002579, "User", "user", "123456"));
-        handleCreateStudent(new Student(22002580, "Student", "student", "123456"));
-        handleCreateStudent(new Student(22002575, "Trần Gia Nguyên Phong", "phong.tgn02575", "123456"));
-        handleCreateStudent(new Student(22002582, "Student Trần", "student.t02582", "123456"));
-    }
 }

@@ -17,6 +17,7 @@ public class PhotocopyTransaction {
 
     private LocalDate date;
 
+    @Column(nullable = true)
     private long amount;
 
     @ManyToOne()
