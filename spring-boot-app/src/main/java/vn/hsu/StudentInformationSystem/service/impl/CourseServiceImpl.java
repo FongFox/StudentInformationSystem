@@ -8,6 +8,7 @@ import vn.hsu.StudentInformationSystem.repository.CourseRepository;
 import vn.hsu.StudentInformationSystem.service.CourseService;
 import vn.hsu.StudentInformationSystem.service.SemesterService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +47,25 @@ public class CourseServiceImpl implements CourseService {
         Semester semester = semesterService.handleFetchSemesterByCode(semesterCode);
         // 2. Trả về list enrollment
         return courseRepository.findAllByStudentIdAndSemesterId(studentId, semester.getId());
+    }
+
+    @Override
+    public List<Course> handleFetchExamScheduleByStudentAndSemesterCode(Long studentId, long semesterCode) {
+        //1. Lấy tất cả courses cho student & semester
+        List<Course> courseList = handleFetchCoursesByStudentAndSemesterCode(studentId, semesterCode);
+
+        //2. Tạo list rỗng để chứa các khoá có lịch thi
+        List<Course> examCourseList = new ArrayList<>();
+
+        //3. Duyệt từng course & lọc
+        for (Course course : courseList) {
+            if (course.getFinalExamDate() != null && course.getFinalExamTime() != null) {
+                examCourseList.add(course);
+            }
+        }
+
+        //4. Trả về kết quả
+        return examCourseList;
     }
 
 }

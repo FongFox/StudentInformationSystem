@@ -171,5 +171,41 @@ JOIN students s  ON c.student_id  = s.id
 JOIN semester sem ON c.semester_id = sem.id
 ORDER BY s.code, c.code;
 
+-- 8. Gán ngày & giờ thi ngẫu nhiên cho các enrollment của kỳ 2431
+UPDATE courses
+SET
+  final_exam_date = date '2024-05-20' 
+                    + (floor(random()*6)::int) * interval '1 day',
+  final_exam_time = time '08:00'
+                    + (floor(random()*4)::int) * interval '2 hour'
+WHERE student_id IS NOT NULL
+  AND semester_id = (SELECT id FROM semester WHERE code = 2431);
+
+-- 9. Gán ngày & giờ thi ngẫu nhiên cho các enrollment của kỳ 2333
+UPDATE courses
+SET
+  final_exam_date = date '2023-12-10'
+                    + (floor(random()*6)::int) * interval '1 day',
+  final_exam_time = time '09:00'
+                    + (floor(random()*3)::int) * interval '3 hour'
+WHERE student_id IS NOT NULL
+  AND semester_id = (SELECT id FROM semester WHERE code = 2333);
+
+-- 10. Kiểm tra kết quả
+SELECT
+  s.code             AS student_code,
+  s.full_name        AS student_name,
+  sem.code           AS semester_code,
+  c.code             AS course_code,
+  c.grade            AS course_grade,
+  c.final_exam_date  AS exam_date,
+  c.final_exam_time  AS exam_time
+FROM courses c
+JOIN students s  ON c.student_id  = s.id
+JOIN semester sem ON c.semester_id = sem.id
+WHERE c.student_id IS NOT NULL
+  AND sem.code IN (2431, 2333)
+ORDER BY sem.code, s.code, c.code;
+
 COMMIT;
 

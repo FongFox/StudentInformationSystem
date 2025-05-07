@@ -8,10 +8,11 @@ import vn.hsu.StudentInformationSystem.model.Course;
 import vn.hsu.StudentInformationSystem.model.Student;
 import vn.hsu.StudentInformationSystem.service.CourseService;
 import vn.hsu.StudentInformationSystem.service.StudentService;
+import vn.hsu.StudentInformationSystem.service.dto.CourseExamResponse;
 import vn.hsu.StudentInformationSystem.service.dto.CourseGradeResponse;
-import vn.hsu.StudentInformationSystem.service.dto.GradeQueryRequest;
 import vn.hsu.StudentInformationSystem.service.dto.PasswordChangeRequest;
 import vn.hsu.StudentInformationSystem.service.dto.StudentProfileResponse;
+import vn.hsu.StudentInformationSystem.service.mapper.CourseExamMapper;
 import vn.hsu.StudentInformationSystem.service.mapper.CourseMapper;
 import vn.hsu.StudentInformationSystem.service.mapper.StudentMapper;
 import vn.hsu.StudentInformationSystem.util.SecurityUtils;
@@ -27,12 +28,14 @@ public class StudentController {
 
     private final StudentMapper studentMapper;
     private final CourseMapper courseMapper;
+    private final CourseExamMapper courseExamMapper;
 
-    public StudentController(StudentService studentService, CourseService courseService, StudentMapper studentMapper, CourseMapper courseMapper) {
+    public StudentController(StudentService studentService, CourseService courseService, StudentMapper studentMapper, CourseMapper courseMapper, CourseExamMapper courseExamMapper) {
         this.studentService = studentService;
         this.courseService = courseService;
         this.studentMapper = studentMapper;
         this.courseMapper = courseMapper;
+        this.courseExamMapper = courseExamMapper;
     }
 
     @GetMapping("me")
@@ -59,37 +62,60 @@ public class StudentController {
     }
 
     /**
-     * POST /api/v1/students/me/grades
-     * Body: { "semesterCode": 2431 }
+     * GET /api/v1/students/me/grades/{semesterCode}
+     * Return the grades for the authenticated student in the given semester.
      */
-    @GetMapping("grades")
-    public ResponseEntity<List<CourseGradeResponse>> fetchStudentCourseGrade(
-            @RequestBody GradeQueryRequest gradeQueryRequest
-    ) {
-        //1. Lấy username từ token
+    @GetMapping("grades/{semesterCode}")
+    public ResponseEntity<List<CourseGradeResponse>> fetchStudentCourseGrade(@PathVariable("semesterCode") long semesterCode) {
+        // 1. Get username from token
         String username = SecurityUtils.getCurrentUserLogin()
-                .orElseThrow(() -> new EntityNotFoundException("User not authenticated"));
-        //2. Lấy student từ db
+                .orElseThrow(() -> new EntityNotFoundException("User not authenticated!"));
+
+        // 2. Fetch Student entity by username
         Student student = this.studentService.handleFetchStudentByUsername(username);
-        //3. Lấy course + grade
-        List<Course> courseList = this.courseService.handleFetchCoursesByStudentAndSemesterCode(
-                student.getId(), gradeQueryRequest.getSemesterCode()
-        );
-        //4. Map sang DTO
+
+        // 3. Fetch courses with grades for this student and semesterCode
+        List<Course> courseList = this.courseService.handleFetchCoursesByStudentAndSemesterCode(student.getId(), semesterCode);
+
+        // 4. Map each Course to CourseGradeResponse DTOs
         List<CourseGradeResponse> courseGradeResponseList = new ArrayList<>();
         for (Course course : courseList) {
+            // map entity to DTO
             courseGradeResponseList.add(this.courseMapper.toDto(course));
         }
 
+        // 5. Return 200 OK with the DTO list
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(courseGradeResponseList);
     }
 
-    // Todo
-    @GetMapping("exam")
-    public ResponseEntity<Void> fetchStudentExam() {
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+    
+    @GetMapping("exam/{semesterCode}")
+    public ResponseEntity<List<CourseExamResponse>> fetchStudentExam(@PathVariable("semesterCode") long semesterCode) {
+        // 1. Lấy username từ token
+        String username = SecurityUtils.getCurrentUserLogin().orElseThrow(
+                () -> new EntityNotFoundException("User not authenticated!")
+        );
+
+        // 2. Lấy Student
+        Student me = studentService.handleFetchStudentByUsername(username);
+
+        // 3. Lấy tất cả course đã enroll và có lịch thi
+        List<Course> courseList = courseService.handleFetchExamScheduleByStudentAndSemesterCode(me.getId(), semesterCode);
+
+        // 4. Chuyển từng đối tượng Course thành CourseExamResponse DTO
+        List<CourseExamResponse> courseExamResponseList = new ArrayList<>();
+        for (Course course : courseList) {
+            // Map Course entity to CourseExamResponse DTO
+            CourseExamResponse courseExamResponse = this.courseExamMapper.toDto(course);
+            courseExamResponseList.add(courseExamResponse);
+        }
+
+        // 5. Trả về
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(courseExamResponseList);
     }
 
     // Todo
