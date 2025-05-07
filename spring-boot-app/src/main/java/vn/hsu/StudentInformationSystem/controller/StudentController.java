@@ -20,6 +20,14 @@ import vn.hsu.StudentInformationSystem.util.SecurityUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * REST controller for student-related operations:
+ * - Retrieve own profile
+ * - Change password
+ * - View grades for a specific semester
+ * - View exam schedule for a specific semester
+ * - (TODO) View tuition details
+ */
 @RestController
 @RequestMapping("api/v1/students")
 public class StudentController {
@@ -38,6 +46,13 @@ public class StudentController {
         this.courseExamMapper = courseExamMapper;
     }
 
+    /**
+     * GET  /api/v1/students/me
+     * <p>
+     * Return the profile of the currently authenticated student.
+     *
+     * @return StudentProfileResponse wrapped in HTTP 200
+     */
     @GetMapping("me")
     public ResponseEntity<StudentProfileResponse> fetchAccount() {
         String username = SecurityUtils.getCurrentUserLogin()
@@ -49,6 +64,14 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.OK).body(studentProfileResponse);
     }
 
+    /**
+     * PATCH  /api/v1/students/me/pwd
+     * <p>
+     * Change the password of the currently authenticated student.
+     *
+     * @param request JSON body containing the new password
+     * @return Plain text confirmation with HTTP 200
+     */
     @PatchMapping("me/pwd")
     public ResponseEntity<String> updateStudentPassword(@RequestBody PasswordChangeRequest request) {
         String username = SecurityUtils.getCurrentUserLogin()
@@ -62,8 +85,13 @@ public class StudentController {
     }
 
     /**
-     * GET /api/v1/students/me/grades/{semesterCode}
-     * Return the grades for the authenticated student in the given semester.
+     * GET  /api/v1/students/grades/{semesterCode}
+     * <p>
+     * Retrieve the list of courses and corresponding grades for the
+     * authenticated student in the specified semester.
+     *
+     * @param semesterCode business key identifying the semester
+     * @return List of CourseGradeResponse wrapped in HTTP 200
      */
     @GetMapping("grades/{semesterCode}")
     public ResponseEntity<List<CourseGradeResponse>> fetchStudentCourseGrade(@PathVariable("semesterCode") long semesterCode) {
@@ -90,9 +118,17 @@ public class StudentController {
                 .body(courseGradeResponseList);
     }
 
-    
+    /**
+     * GET  /api/v1/students/exam/{semesterCode}
+     * <p>
+     * Retrieve the exam schedule (date and time) for the authenticated student
+     * in the specified semester.
+     *
+     * @param semesterCode business key identifying the semester
+     * @return List of CourseExamResponse wrapped in HTTP 200
+     */
     @GetMapping("exam/{semesterCode}")
-    public ResponseEntity<List<CourseExamResponse>> fetchStudentExam(@PathVariable("semesterCode") long semesterCode) {
+    public ResponseEntity<List<CourseExamResponse>> fetchStudentCourseExam(@PathVariable("semesterCode") long semesterCode) {
         // 1. Lấy username từ token
         String username = SecurityUtils.getCurrentUserLogin().orElseThrow(
                 () -> new EntityNotFoundException("User not authenticated!")
@@ -118,7 +154,11 @@ public class StudentController {
                 .body(courseExamResponseList);
     }
 
-    // Todo
+    /**
+     * GET  /api/v1/students/tuition
+     * <p>
+     * (TODO) Retrieve the tuition details for the authenticated student.
+     */
     @GetMapping("tuition")
     public ResponseEntity<Void> fetchStudentTuition() {
         return ResponseEntity.status(HttpStatus.OK).body(null);
