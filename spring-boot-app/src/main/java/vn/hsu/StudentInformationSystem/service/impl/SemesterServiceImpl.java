@@ -3,9 +3,11 @@ package vn.hsu.StudentInformationSystem.service.impl;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import vn.hsu.StudentInformationSystem.model.Semester;
+import vn.hsu.StudentInformationSystem.model.Student;
 import vn.hsu.StudentInformationSystem.repository.SemesterRepository;
 import vn.hsu.StudentInformationSystem.service.SemesterService;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,6 +29,11 @@ public class SemesterServiceImpl implements SemesterService {
         return semesterOptional.orElseThrow(
                 () -> new EntityNotFoundException("Semester with code " + code + " not found!")
         );
+    }
+
+    @Override
+    public List<Semester> handleFetchSemesterByStudent(Student student) {
+        return this.semesterRepository.findDistinctByCourseListStudent(student);
     }
 
     @Override

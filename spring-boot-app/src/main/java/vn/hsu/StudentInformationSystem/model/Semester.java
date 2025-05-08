@@ -1,5 +1,6 @@
 package vn.hsu.StudentInformationSystem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,9 +27,11 @@ public class Semester {
     private String shortDescription;
 
     @OneToMany(mappedBy = "semester", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Course> courseList;
 
     @OneToMany(mappedBy = "semester", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Tuition> tuitionList;
 
     public Semester() {

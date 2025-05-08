@@ -5,16 +5,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.hsu.StudentInformationSystem.model.Course;
+import vn.hsu.StudentInformationSystem.model.Semester;
 import vn.hsu.StudentInformationSystem.model.Student;
 import vn.hsu.StudentInformationSystem.model.Tuition;
 import vn.hsu.StudentInformationSystem.service.CourseService;
+import vn.hsu.StudentInformationSystem.service.SemesterService;
 import vn.hsu.StudentInformationSystem.service.StudentService;
 import vn.hsu.StudentInformationSystem.service.TuitionService;
 import vn.hsu.StudentInformationSystem.service.dto.*;
-import vn.hsu.StudentInformationSystem.service.mapper.CourseExamMapper;
-import vn.hsu.StudentInformationSystem.service.mapper.CourseMapper;
-import vn.hsu.StudentInformationSystem.service.mapper.StudentMapper;
-import vn.hsu.StudentInformationSystem.service.mapper.TuitionMapper;
+import vn.hsu.StudentInformationSystem.service.mapper.*;
 import vn.hsu.StudentInformationSystem.util.SecurityUtils;
 
 import java.util.ArrayList;
@@ -34,20 +33,24 @@ public class StudentController {
     private final StudentService studentService;
     private final CourseService courseService;
     private final TuitionService tuitionService;
+    private final SemesterService semesterService;
 
     private final StudentMapper studentMapper;
     private final CourseMapper courseMapper;
     private final CourseExamMapper courseExamMapper;
     private final TuitionMapper tuitionMapper;
+    private final SemesterMapper semesterMapper;
 
-    public StudentController(StudentService studentService, CourseService courseService, TuitionService tuitionService, StudentMapper studentMapper, CourseMapper courseMapper, CourseExamMapper courseExamMapper, TuitionMapper tuitionMapper) {
+    public StudentController(StudentService studentService, CourseService courseService, TuitionService tuitionService, SemesterService semesterService, StudentMapper studentMapper, CourseMapper courseMapper, CourseExamMapper courseExamMapper, TuitionMapper tuitionMapper, SemesterMapper semesterMapper) {
         this.studentService = studentService;
         this.courseService = courseService;
         this.tuitionService = tuitionService;
+        this.semesterService = semesterService;
         this.studentMapper = studentMapper;
         this.courseMapper = courseMapper;
         this.courseExamMapper = courseExamMapper;
         this.tuitionMapper = tuitionMapper;
+        this.semesterMapper = semesterMapper;
     }
 
     /**
@@ -182,5 +185,25 @@ public class StudentController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(tuitionResponseList);
+    }
+
+    @GetMapping("semester")
+    public ResponseEntity<List<SemesterResponse>> fetchStudentSemester() {
+        String username = SecurityUtils.getCurrentUserLogin().orElseThrow(
+                () -> new EntityNotFoundException("User not authenticated!")
+        );
+
+        Student me = studentService.handleFetchStudentByUsername(username);
+
+        List<Semester> semesterList = this.semesterService.handleFetchSemesterByStudent(me);
+
+        List<SemesterResponse> semesterResponseList = new ArrayList<>();
+        for (Semester semester : semesterList) {
+            semesterResponseList.add(this.semesterMapper.toDto(semester));
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(semesterResponseList);
     }
 }

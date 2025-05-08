@@ -1,6 +1,7 @@
 package vn.hsu.StudentInformationSystem.service.dto;
 
 public class TuitionResponse {
+    private long semesterCode;
     private long total;
     private long paid;
     private long refund;
@@ -10,12 +11,21 @@ public class TuitionResponse {
     public TuitionResponse() {
     }
 
-    public TuitionResponse(long total, long paid, long refund, long balance, boolean isPaid) {
+    public TuitionResponse(long semesterCode, long total, long paid, long refund, long balance, boolean isPaid) {
+        this.semesterCode = semesterCode;
         this.total = total;
         this.paid = paid;
         this.refund = refund;
         this.balance = balance;
         this.isPaid = isPaid;
+    }
+
+    public long getSemesterCode() {
+        return semesterCode;
+    }
+
+    public void setSemesterCode(long semesterCode) {
+        this.semesterCode = semesterCode;
     }
 
     public long getTotal() {

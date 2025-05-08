@@ -1,5 +1,6 @@
 package vn.hsu.StudentInformationSystem.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,12 +35,15 @@ public class Student {
     private String refreshToken;
 
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Course> courseList;
 
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<PhotocopyTransaction> photocopyTransactionList;
 
     @OneToMany(mappedBy = "student", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Tuition> tuitionList;
 
     public Student() {

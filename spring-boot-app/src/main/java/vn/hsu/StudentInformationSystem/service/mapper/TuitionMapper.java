@@ -7,6 +7,6 @@ import vn.hsu.StudentInformationSystem.service.dto.TuitionResponse;
 @Component
 public class TuitionMapper {
     public TuitionResponse toDto(Tuition tuition) {
-        return new TuitionResponse(tuition.getTotal(), tuition.getPaid(), tuition.getRefund(), tuition.getBalance(), tuition.isPaid());
+        return new TuitionResponse(tuition.getSemester().getCode(), tuition.getTotal(), tuition.getPaid(), tuition.getRefund(), tuition.getBalance(), tuition.isPaid());
     }
 }
