@@ -1,13 +1,9 @@
 package vn.hsu.StudentInformationSystem.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Table(name = "tuition")
-@Setter
-@Getter
 public class Tuition {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,5 +39,69 @@ public class Tuition {
     private Student student;
 
     public Tuition() {
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public long getTotal() {
+        return total;
+    }
+
+    public void setTotal(long total) {
+        this.total = total;
+    }
+
+    public long getPaid() {
+        return paid;
+    }
+
+    public long getRefund() {
+        return refund;
+    }
+
+    public void setRefund(long refund) {
+        this.refund = refund;
+    }
+
+    public long getBalance() {
+        return balance;
+    }
+
+    public void setBalance(long balance) {
+        this.balance = balance;
+    }
+
+    public boolean isPaid() {
+        return isPaid;
+    }
+
+    public void setPaid(long paid) {
+        this.paid = paid;
+    }
+
+    public void setPaid(boolean paid) {
+        isPaid = paid;
+    }
+
+    public Semester getSemester() {
+        return semester;
+    }
+
+    public void setSemester(Semester semester) {
+        this.semester = semester;
+    }
+
+    public Student getStudent() {
+        return student;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
     }
 }

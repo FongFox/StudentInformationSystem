@@ -207,5 +207,55 @@ WHERE c.student_id IS NOT NULL
   AND sem.code IN (2431, 2333)
 ORDER BY sem.code, s.code, c.code;
 
+-- 11. Tính và chèn học phí cho mỗi sinh viên mỗi kỳ (nếu chưa có)
+WITH tuition_calc AS (
+  SELECT
+    c.student_id,
+    c.semester_id,
+    SUM(c.price) AS total_amount
+  FROM courses c
+  WHERE c.student_id IS NOT NULL
+  GROUP BY c.student_id, c.semester_id
+)
+INSERT INTO tuition (
+  student_id,
+  semester_id,
+  total,
+  paid,
+  refund,
+  balance,
+  is_paid
+)
+SELECT
+  tc.student_id,
+  tc.semester_id,
+  tc.total_amount,          -- tổng học phí
+  tc.total_amount AS paid,  -- đã đóng đủ
+  0            AS refund,   -- chưa có khoản hoàn
+  0            AS balance,  -- còn nợ = 0
+  TRUE         AS is_paid   -- đã thanh toán
+FROM tuition_calc tc
+WHERE NOT EXISTS (
+  SELECT 1
+    FROM tuition t
+   WHERE t.student_id  = tc.student_id
+     AND t.semester_id = tc.semester_id
+);
+
+-- 12. Kiểm tra kết quả
+SELECT
+  s.code           AS student_code,
+  s.full_name      AS student_name,
+  sem.code         AS semester_code,
+  t.total          AS total_tuition,
+  t.paid           AS amount_paid,
+  t.refund         AS amount_refunded,
+  t.balance        AS remaining_balance,
+  t.is_paid        AS fully_paid
+FROM tuition t
+JOIN students s  ON t.student_id  = s.id
+JOIN semester sem ON t.semester_id = sem.id
+ORDER BY sem.code, s.code;
+
 COMMIT;
 

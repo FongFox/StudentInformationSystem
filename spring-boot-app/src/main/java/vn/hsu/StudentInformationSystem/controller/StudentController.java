@@ -6,15 +6,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vn.hsu.StudentInformationSystem.model.Course;
 import vn.hsu.StudentInformationSystem.model.Student;
+import vn.hsu.StudentInformationSystem.model.Tuition;
 import vn.hsu.StudentInformationSystem.service.CourseService;
 import vn.hsu.StudentInformationSystem.service.StudentService;
-import vn.hsu.StudentInformationSystem.service.dto.CourseExamResponse;
-import vn.hsu.StudentInformationSystem.service.dto.CourseGradeResponse;
-import vn.hsu.StudentInformationSystem.service.dto.PasswordChangeRequest;
-import vn.hsu.StudentInformationSystem.service.dto.StudentProfileResponse;
+import vn.hsu.StudentInformationSystem.service.TuitionService;
+import vn.hsu.StudentInformationSystem.service.dto.*;
 import vn.hsu.StudentInformationSystem.service.mapper.CourseExamMapper;
 import vn.hsu.StudentInformationSystem.service.mapper.CourseMapper;
 import vn.hsu.StudentInformationSystem.service.mapper.StudentMapper;
+import vn.hsu.StudentInformationSystem.service.mapper.TuitionMapper;
 import vn.hsu.StudentInformationSystem.util.SecurityUtils;
 
 import java.util.ArrayList;
@@ -29,21 +29,25 @@ import java.util.List;
  * - (TODO) View tuition details
  */
 @RestController
-@RequestMapping("api/v1/students")
+@RequestMapping("api/v1/students/me")
 public class StudentController {
     private final StudentService studentService;
     private final CourseService courseService;
+    private final TuitionService tuitionService;
 
     private final StudentMapper studentMapper;
     private final CourseMapper courseMapper;
     private final CourseExamMapper courseExamMapper;
+    private final TuitionMapper tuitionMapper;
 
-    public StudentController(StudentService studentService, CourseService courseService, StudentMapper studentMapper, CourseMapper courseMapper, CourseExamMapper courseExamMapper) {
+    public StudentController(StudentService studentService, CourseService courseService, TuitionService tuitionService, StudentMapper studentMapper, CourseMapper courseMapper, CourseExamMapper courseExamMapper, TuitionMapper tuitionMapper) {
         this.studentService = studentService;
         this.courseService = courseService;
+        this.tuitionService = tuitionService;
         this.studentMapper = studentMapper;
         this.courseMapper = courseMapper;
         this.courseExamMapper = courseExamMapper;
+        this.tuitionMapper = tuitionMapper;
     }
 
     /**
@@ -53,7 +57,7 @@ public class StudentController {
      *
      * @return StudentProfileResponse wrapped in HTTP 200
      */
-    @GetMapping("me")
+    @GetMapping("")
     public ResponseEntity<StudentProfileResponse> fetchAccount() {
         String username = SecurityUtils.getCurrentUserLogin()
                 .orElseThrow(() -> new EntityNotFoundException("Student with username not found"));
@@ -72,7 +76,7 @@ public class StudentController {
      * @param request JSON body containing the new password
      * @return Plain text confirmation with HTTP 200
      */
-    @PatchMapping("me/pwd")
+    @PatchMapping("pwd")
     public ResponseEntity<String> updateStudentPassword(@RequestBody PasswordChangeRequest request) {
         String username = SecurityUtils.getCurrentUserLogin()
                 .orElseThrow(() -> new EntityNotFoundException("Student with username not found"));
@@ -85,7 +89,7 @@ public class StudentController {
     }
 
     /**
-     * GET  /api/v1/students/grades/{semesterCode}
+     * GET  /api/v1/students/me/grades/{semesterCode}
      * <p>
      * Retrieve the list of courses and corresponding grades for the
      * authenticated student in the specified semester.
@@ -119,7 +123,7 @@ public class StudentController {
     }
 
     /**
-     * GET  /api/v1/students/exam/{semesterCode}
+     * GET  /api/v1/students/me/exam/{semesterCode}
      * <p>
      * Retrieve the exam schedule (date and time) for the authenticated student
      * in the specified semester.
@@ -155,12 +159,28 @@ public class StudentController {
     }
 
     /**
-     * GET  /api/v1/students/tuition
+     * GET  /api/v1/students/me/tuition
      * <p>
-     * (TODO) Retrieve the tuition details for the authenticated student.
+     *
+     * @return Retrieve the tuition details for the authenticated student.
      */
     @GetMapping("tuition")
-    public ResponseEntity<Void> fetchStudentTuition() {
-        return ResponseEntity.status(HttpStatus.OK).body(null);
+    public ResponseEntity<List<TuitionResponse>> fetchStudentTuition() {
+        String username = SecurityUtils.getCurrentUserLogin().orElseThrow(
+                () -> new EntityNotFoundException("User not authenticated!")
+        );
+
+        Student me = studentService.handleFetchStudentByUsername(username);
+
+        List<Tuition> tuitionList = this.tuitionService.handleFetchAllTuitionByStudent(me);
+
+        List<TuitionResponse> tuitionResponseList = new ArrayList<>();
+        for (Tuition tuition : tuitionList) {
+            tuitionResponseList.add(this.tuitionMapper.toDto(tuition));
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(tuitionResponseList);
     }
 }
