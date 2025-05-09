@@ -257,5 +257,70 @@ JOIN students s  ON t.student_id  = s.id
 JOIN semester sem ON t.semester_id = sem.id
 ORDER BY sem.code, s.code;
 
+-- Step 10: Initialize photo balance for each student (1–5 million VND) if null
+UPDATE students
+   SET photocopy_balance = (floor(random() * 5 + 1)::int) * 1000000
+ WHERE photocopy_balance IS NULL
+   AND code IN (22002575, 22002581, 22002576);
+
+-- Step 11: Insert 5 random photocopy expense transactions per student
+WITH studs AS (
+  SELECT id FROM students
+   WHERE code IN (22002575, 22002581, 22002576)
+)
+INSERT INTO photocopy_transactions (date, amount, student_id)
+SELECT CURRENT_DATE - (floor(random() * 30)::int),
+       (floor(random() * 5)::int + 1) * 100000,
+       s.id
+  FROM studs s
+ CROSS JOIN generate_series(1,5);
+
+-- Step 12: Insert an additional 10 random photocopy transactions per student
+WITH studs AS (
+  SELECT id FROM students
+   WHERE code IN (22002575, 22002581, 22002576)
+)
+INSERT INTO photocopy_transactions (date, amount, student_id)
+SELECT CURRENT_DATE - (floor(random() * 60)::int),
+       (floor(random() * 18)::int + 1) * 50000,
+       s.id
+  FROM studs s
+ CROSS JOIN generate_series(1,10);
+
+-- Step 13: Recalculate photo balance = initial balance – total spent
+UPDATE students st
+   SET photocopy_balance = st.photocopy_balance - COALESCE(tx.total_spent, 0)
+  FROM (
+    SELECT student_id, SUM(amount) AS total_spent
+      FROM photocopy_transactions
+     GROUP BY student_id
+  ) tx
+ WHERE st.id = tx.student_id;
+
+-- Step 14: Ensure no negative photo balances
+UPDATE students
+   SET photocopy_balance = 0
+ WHERE photocopy_balance < 0;
+
+-- Step 15: Final check of student balances and transaction counts
+SELECT
+  s.code                            AS student_code,
+  s.full_name                       AS student_name,
+  to_char(s.photocopy_balance,
+          'FM9G999G999')           AS remaining_balance_vnd,
+  tx.count_tx                       AS num_transactions,
+  to_char(tx.total_spent,
+          'FM9G999G999')           AS total_spent_vnd
+FROM students s
+LEFT JOIN (
+  SELECT student_id,
+         COUNT(*)    AS count_tx,
+         SUM(amount) AS total_spent
+    FROM photocopy_transactions
+   GROUP BY student_id
+) tx ON tx.student_id = s.id
+WHERE s.code IN (22002575, 22002581, 22002576)
+ORDER BY s.code;
+
 COMMIT;
 

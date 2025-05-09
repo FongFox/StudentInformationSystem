@@ -4,14 +4,8 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vn.hsu.StudentInformationSystem.model.Course;
-import vn.hsu.StudentInformationSystem.model.Semester;
-import vn.hsu.StudentInformationSystem.model.Student;
-import vn.hsu.StudentInformationSystem.model.Tuition;
-import vn.hsu.StudentInformationSystem.service.CourseService;
-import vn.hsu.StudentInformationSystem.service.SemesterService;
-import vn.hsu.StudentInformationSystem.service.StudentService;
-import vn.hsu.StudentInformationSystem.service.TuitionService;
+import vn.hsu.StudentInformationSystem.model.*;
+import vn.hsu.StudentInformationSystem.service.*;
 import vn.hsu.StudentInformationSystem.service.dto.*;
 import vn.hsu.StudentInformationSystem.service.mapper.*;
 import vn.hsu.StudentInformationSystem.util.SecurityUtils;
@@ -20,12 +14,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * REST controller for student-related operations:
- * - Retrieve own profile
- * - Change password
- * - View grades for a specific semester
- * - View exam schedule for a specific semester
- * - (TODO) View tuition details
+ * REST controller for all student-facing operations under /api/v1/students/me:
+ * <ul>
+ *   <li>Profile lookup</li>
+ *   <li>Password change</li>
+ *   <li>Course grades retrieval by semester</li>
+ *   <li>Exam schedule retrieval by semester</li>
+ *   <li>Tuition details retrieval</li>
+ *   <li>Available semesters retrieval</li>
+ * </ul>
  */
 @RestController
 @RequestMapping("api/v1/students/me")
@@ -34,40 +31,56 @@ public class StudentController {
     private final CourseService courseService;
     private final TuitionService tuitionService;
     private final SemesterService semesterService;
+    private final PhotocopyTransactionService photocopyTransactionService;
 
     private final StudentMapper studentMapper;
     private final CourseMapper courseMapper;
     private final CourseExamMapper courseExamMapper;
     private final TuitionMapper tuitionMapper;
     private final SemesterMapper semesterMapper;
+    private final PhotocopyMapper photocopyMapper;
 
-    public StudentController(StudentService studentService, CourseService courseService, TuitionService tuitionService, SemesterService semesterService, StudentMapper studentMapper, CourseMapper courseMapper, CourseExamMapper courseExamMapper, TuitionMapper tuitionMapper, SemesterMapper semesterMapper) {
+    public StudentController(StudentService studentService, CourseService courseService, TuitionService tuitionService, SemesterService semesterService, PhotocopyTransactionService photocopyTransactionService, StudentMapper studentMapper, CourseMapper courseMapper, CourseExamMapper courseExamMapper, TuitionMapper tuitionMapper, SemesterMapper semesterMapper, PhotocopyMapper photocopyMapper) {
         this.studentService = studentService;
         this.courseService = courseService;
         this.tuitionService = tuitionService;
         this.semesterService = semesterService;
+        this.photocopyTransactionService = photocopyTransactionService;
         this.studentMapper = studentMapper;
         this.courseMapper = courseMapper;
         this.courseExamMapper = courseExamMapper;
         this.tuitionMapper = tuitionMapper;
         this.semesterMapper = semesterMapper;
+        this.photocopyMapper = photocopyMapper;
     }
 
     /**
      * GET  /api/v1/students/me
      * <p>
-     * Return the profile of the currently authenticated student.
+     * Fetch the profile of the currently authenticated student.
      *
-     * @return StudentProfileResponse wrapped in HTTP 200
+     * @return 200 OK with a StudentProfileResponse JSON body containing:
+     * <ul>
+     *   <li>id</li>
+     *   <li>code</li>
+     *   <li>fullName</li>
+     *   <li>username</li>
+     * </ul>
+     * @throws EntityNotFoundException if the token is missing or invalid
      */
     @GetMapping("")
     public ResponseEntity<StudentProfileResponse> fetchAccount() {
+        // 1. Extract username from JWT
         String username = SecurityUtils.getCurrentUserLogin()
                 .orElseThrow(() -> new EntityNotFoundException("Student with username not found"));
 
+        // 2. Fetch student record
         Student dbStudent = this.studentService.handleFetchStudentByUsername(username);
+
+        // 3. Convert to DTO
         StudentProfileResponse studentProfileResponse = this.studentMapper.toProfile(dbStudent);
 
+        // 4. Return DTO
         return ResponseEntity.status(HttpStatus.OK).body(studentProfileResponse);
     }
 
@@ -76,46 +89,57 @@ public class StudentController {
      * <p>
      * Change the password of the currently authenticated student.
      *
-     * @param request JSON body containing the new password
-     * @return Plain text confirmation with HTTP 200
+     * @param request JSON body containing: { "newPassword": "..." }
+     * @return 200 OK with plain-text confirmation
+     * @throws EntityNotFoundException if the token is missing or invalid
      */
     @PatchMapping("pwd")
     public ResponseEntity<String> updateStudentPassword(@RequestBody PasswordChangeRequest request) {
+        // 1. Validate authentication
         String username = SecurityUtils.getCurrentUserLogin()
                 .orElseThrow(() -> new EntityNotFoundException("Student with username not found"));
 
+        // 2. Fetch student
         Student dbStudent = this.studentService.handleFetchStudentByUsername(username);
 
+        // 3. Update password (service handles hashing)
         this.studentService.handleUpdateStudentPassword(dbStudent.getId(), request.getNewPassword());
 
+        // 4. Return success message
         return ResponseEntity.status(HttpStatus.OK).body("Password Updated!");
     }
 
     /**
      * GET  /api/v1/students/me/grades/{semesterCode}
      * <p>
-     * Retrieve the list of courses and corresponding grades for the
-     * authenticated student in the specified semester.
+     * Retrieve all courses and their grades for the authenticated student
+     * in the given semester.
      *
-     * @param semesterCode business key identifying the semester
-     * @return List of CourseGradeResponse wrapped in HTTP 200
+     * @param semesterCode business identifier of the semester (e.g., 2431)
+     * @return 200 OK with a JSON array of CourseGradeResponse, each containing:
+     * <ul>
+     *   <li>courseCode</li>
+     *   <li>courseName</li>
+     *   <li>credit</li>
+     *   <li>grade</li>
+     * </ul>
+     * @throws EntityNotFoundException if authentication fails
      */
     @GetMapping("grades/{semesterCode}")
     public ResponseEntity<List<CourseGradeResponse>> fetchStudentCourseGrade(@PathVariable("semesterCode") long semesterCode) {
-        // 1. Get username from token
+        // Extract and validate user
         String username = SecurityUtils.getCurrentUserLogin()
                 .orElseThrow(() -> new EntityNotFoundException("User not authenticated!"));
 
-        // 2. Fetch Student entity by username
+        // Fetch student entity
         Student student = this.studentService.handleFetchStudentByUsername(username);
 
-        // 3. Fetch courses with grades for this student and semesterCode
+        // Fetch courses + grades
         List<Course> courseList = this.courseService.handleFetchCoursesByStudentAndSemesterCode(student.getId(), semesterCode);
 
-        // 4. Map each Course to CourseGradeResponse DTOs
+        // Map to DTOs
         List<CourseGradeResponse> courseGradeResponseList = new ArrayList<>();
         for (Course course : courseList) {
-            // map entity to DTO
             courseGradeResponseList.add(this.courseMapper.toDto(course));
         }
 
@@ -128,26 +152,32 @@ public class StudentController {
     /**
      * GET  /api/v1/students/me/exam/{semesterCode}
      * <p>
-     * Retrieve the exam schedule (date and time) for the authenticated student
-     * in the specified semester.
+     * Retrieve the exam schedule for the authenticated student
+     * in the given semester.
      *
-     * @param semesterCode business key identifying the semester
-     * @return List of CourseExamResponse wrapped in HTTP 200
+     * @param semesterCode business identifier of the semester
+     * @return 200 OK with a JSON array of CourseExamResponse, each containing:
+     * <ul>
+     *   <li>courseCode</li>
+     *   <li>courseName</li>
+     *   <li>examDate</li>
+     *   <li>examTime</li>
+     * </ul>
      */
     @GetMapping("exam/{semesterCode}")
     public ResponseEntity<List<CourseExamResponse>> fetchStudentCourseExam(@PathVariable("semesterCode") long semesterCode) {
-        // 1. Lấy username từ token
+        // 1. Validate and fetch current user
         String username = SecurityUtils.getCurrentUserLogin().orElseThrow(
                 () -> new EntityNotFoundException("User not authenticated!")
         );
 
-        // 2. Lấy Student
+        // 2. Fetch exam-scheduled courses
         Student me = studentService.handleFetchStudentByUsername(username);
 
-        // 3. Lấy tất cả course đã enroll và có lịch thi
+        // 3. Convert to DTOs
         List<Course> courseList = courseService.handleFetchExamScheduleByStudentAndSemesterCode(me.getId(), semesterCode);
 
-        // 4. Chuyển từng đối tượng Course thành CourseExamResponse DTO
+        // 4. Return exam schedule
         List<CourseExamResponse> courseExamResponseList = new ArrayList<>();
         for (Course course : courseList) {
             // Map Course entity to CourseExamResponse DTO
@@ -155,7 +185,6 @@ public class StudentController {
             courseExamResponseList.add(courseExamResponse);
         }
 
-        // 5. Trả về
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(courseExamResponseList);
@@ -164,19 +193,31 @@ public class StudentController {
     /**
      * GET  /api/v1/students/me/tuition
      * <p>
+     * Retrieve the tuition details for the authenticated student
+     * across all semesters.
      *
-     * @return Retrieve the tuition details for the authenticated student.
+     * @return 200 OK with a JSON array of TuitionResponse, each containing:
+     * <ul>
+     *   <li>semesterCode</li>
+     *   <li>total</li>
+     *   <li>paid</li>
+     *   <li>refund</li>
+     *   <li>balance</li>
+     *   <li>isPaid</li>
+     * </ul>
      */
     @GetMapping("tuition")
     public ResponseEntity<List<TuitionResponse>> fetchStudentTuition() {
+        // 1. Validate user
         String username = SecurityUtils.getCurrentUserLogin().orElseThrow(
                 () -> new EntityNotFoundException("User not authenticated!")
         );
 
+        // 2. Fetch tuition records
         Student me = studentService.handleFetchStudentByUsername(username);
 
+        // 3. Map to DTOs
         List<Tuition> tuitionList = this.tuitionService.handleFetchAllTuitionByStudent(me);
-
         List<TuitionResponse> tuitionResponseList = new ArrayList<>();
         for (Tuition tuition : tuitionList) {
             tuitionResponseList.add(this.tuitionMapper.toDto(tuition));
@@ -187,16 +228,30 @@ public class StudentController {
                 .body(tuitionResponseList);
     }
 
+    /**
+     * GET  /api/v1/students/me/semester
+     * <p>
+     * Retrieve all semesters in which the authenticated student has enrolled.
+     *
+     * @return 200 OK with a JSON array of SemesterResponse, each containing:
+     * <ul>
+     *   <li>semesterCode</li>
+     *   <li>year</li>
+     *   <li>description</li>
+     * </ul>
+     */
     @GetMapping("semester")
     public ResponseEntity<List<SemesterResponse>> fetchStudentSemester() {
+        // 1. Validate and fetch user
         String username = SecurityUtils.getCurrentUserLogin().orElseThrow(
                 () -> new EntityNotFoundException("User not authenticated!")
         );
 
+        // 2. Fetch semesters via service
         Student me = studentService.handleFetchStudentByUsername(username);
 
+        // 3. Map to DTOs
         List<Semester> semesterList = this.semesterService.handleFetchSemesterByStudent(me);
-
         List<SemesterResponse> semesterResponseList = new ArrayList<>();
         for (Semester semester : semesterList) {
             semesterResponseList.add(this.semesterMapper.toDto(semester));
@@ -205,5 +260,24 @@ public class StudentController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(semesterResponseList);
+    }
+
+    @GetMapping("photocopy")
+    public ResponseEntity<PhotocopyResponse> fetchStudentPhotocopyBalance() {
+        // 1. Validate and fetch user
+        String username = SecurityUtils.getCurrentUserLogin().orElseThrow(
+                () -> new EntityNotFoundException("User not authenticated!")
+        );
+
+        // 2. Fetch semesters via service
+        Student me = studentService.handleFetchStudentByUsername(username);
+
+        List<PhotocopyTransaction> photocopyTransactionList = this.photocopyTransactionService.handleFetchAllByStudent(me);
+
+        PhotocopyResponse photocopyResponse = this.photocopyMapper.toDto(me, photocopyTransactionList);
+        
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(photocopyResponse);
     }
 }
