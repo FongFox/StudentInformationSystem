@@ -32,6 +32,7 @@ public class StudentController {
     private final TuitionService tuitionService;
     private final SemesterService semesterService;
     private final PhotocopyTransactionService photocopyTransactionService;
+    private final AnnouncementService announcementService;
 
     private final StudentMapper studentMapper;
     private final CourseMapper courseMapper;
@@ -39,19 +40,22 @@ public class StudentController {
     private final TuitionMapper tuitionMapper;
     private final SemesterMapper semesterMapper;
     private final PhotocopyMapper photocopyMapper;
+    private final AnnouncementMapper announcementMapper;
 
-    public StudentController(StudentService studentService, CourseService courseService, TuitionService tuitionService, SemesterService semesterService, PhotocopyTransactionService photocopyTransactionService, StudentMapper studentMapper, CourseMapper courseMapper, CourseExamMapper courseExamMapper, TuitionMapper tuitionMapper, SemesterMapper semesterMapper, PhotocopyMapper photocopyMapper) {
+    public StudentController(StudentService studentService, CourseService courseService, TuitionService tuitionService, SemesterService semesterService, PhotocopyTransactionService photocopyTransactionService, AnnouncementService announcementService, StudentMapper studentMapper, CourseMapper courseMapper, CourseExamMapper courseExamMapper, TuitionMapper tuitionMapper, SemesterMapper semesterMapper, PhotocopyMapper photocopyMapper, AnnouncementMapper announcementMapper) {
         this.studentService = studentService;
         this.courseService = courseService;
         this.tuitionService = tuitionService;
         this.semesterService = semesterService;
         this.photocopyTransactionService = photocopyTransactionService;
+        this.announcementService = announcementService;
         this.studentMapper = studentMapper;
         this.courseMapper = courseMapper;
         this.courseExamMapper = courseExamMapper;
         this.tuitionMapper = tuitionMapper;
         this.semesterMapper = semesterMapper;
         this.photocopyMapper = photocopyMapper;
+        this.announcementMapper = announcementMapper;
     }
 
     /**
@@ -110,7 +114,7 @@ public class StudentController {
     }
 
     /**
-     * GET  /api/v1/students/me/grades/{semesterCode}
+     * GET  /api/v1/students/me/grade/{semesterCode}
      * <p>
      * Retrieve all courses and their grades for the authenticated student
      * in the given semester.
@@ -125,7 +129,7 @@ public class StudentController {
      * </ul>
      * @throws EntityNotFoundException if authentication fails
      */
-    @GetMapping("grades/{semesterCode}")
+    @GetMapping("grade/{semesterCode}")
     public ResponseEntity<List<CourseGradeResponse>> fetchStudentCourseGrade(@PathVariable("semesterCode") long semesterCode) {
         // Extract and validate user
         String username = SecurityUtils.getCurrentUserLogin()
@@ -262,6 +266,25 @@ public class StudentController {
                 .body(semesterResponseList);
     }
 
+    /**
+     * GET  /api/v1/students/me/photocopy
+     * <p>
+     * Returns the authenticated student's current photocopy balance
+     * and full transaction history.
+     * <p>
+     * Steps:
+     * 1. Extract the username from the JWT.
+     * 2. Load the Student entity by username.
+     * 3. Fetch all PhotocopyTransaction entries for that student.
+     * 4. Map the Student and transactions into a PhotocopyResponse DTO.
+     *
+     * @return 200 OK with a PhotocopyResponse JSON body containing:
+     * <ul>
+     *   <li>photocopyBalance: current remaining balance</li>
+     *   <li>transactions: list of transactions each with date and amount</li>
+     * </ul>
+     * @throws EntityNotFoundException if the user is not authenticated
+     */
     @GetMapping("photocopy")
     public ResponseEntity<PhotocopyResponse> fetchStudentPhotocopyBalance() {
         // 1. Validate and fetch user
@@ -275,9 +298,53 @@ public class StudentController {
         List<PhotocopyTransaction> photocopyTransactionList = this.photocopyTransactionService.handleFetchAllByStudent(me);
 
         PhotocopyResponse photocopyResponse = this.photocopyMapper.toDto(me, photocopyTransactionList);
-        
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(photocopyResponse);
+    }
+
+    /**
+     * GET  /api/v1/students/me/announcement
+     * <p>
+     * Retrieves all announcements visible to the authenticated student.
+     * <p>
+     * Steps:
+     * 1. Extract the username from the JWT.
+     * 2. Load the Student entity by username (to ensure valid session).
+     * 3. Fetch all Announcement entities (no filtering by student).
+     * 4. Map each Announcement to an AnnouncementResponse DTO.
+     *
+     * @return 200 OK with a JSON array of AnnouncementResponse, each containing:
+     * <ul>
+     *   <li>title</li>
+     *   <li>linkUrl</li>
+     *   <li>imageLinkUrl (nullable)</li>
+     *   <li>category</li>
+     * </ul>
+     * @throws EntityNotFoundException if the user is not authenticated
+     */
+    @GetMapping("announcement")
+    public ResponseEntity<List<AnnouncementResponse>> fetchAllAnnouncement() {
+        // 1. Validate and fetch user
+        String username = SecurityUtils.getCurrentUserLogin().orElseThrow(
+                () -> new EntityNotFoundException("User not authenticated!")
+        );
+
+        // 2. Fetch semesters via service
+        Student me = studentService.handleFetchStudentByUsername(username);
+
+        List<Announcement> announcementList = this.announcementService.handleFetchAllAnnouncement();
+
+        List<AnnouncementResponse> announcementResponseList = new ArrayList<>();
+        for (Announcement announcement : announcementList) {
+            announcementResponseList.add(
+                    this.announcementMapper.toDto(announcement)
+            );
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(announcementResponseList);
     }
 }
