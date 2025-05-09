@@ -1,4 +1,4 @@
-package vn.hsu.StudentInformationSystem.util;
+package vn.hsu.StudentInformationSystem.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.MethodParameter;
@@ -8,6 +8,7 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+import vn.hsu.StudentInformationSystem.service.dto.RestResponse;
 
 @RestControllerAdvice
 public class FormatRestResponse implements ResponseBodyAdvice {
@@ -27,16 +28,6 @@ public class FormatRestResponse implements ResponseBodyAdvice {
         HttpServletResponse servletResponse = ((ServletServerHttpResponse) response).getServletResponse();
         int status = servletResponse.getStatus();
         RestResponse<Object> restResponse = new RestResponse<Object>();
-
-//        if (status >= 400) {
-//            //case error
-//            return body;
-//        } else {
-//            // case success
-//            restResponse.setStatus(status);
-//            restResponse.setMessage("Call API Success!");
-//            restResponse.setData(body);
-//        }
 
         if (body instanceof String) {
             return body;

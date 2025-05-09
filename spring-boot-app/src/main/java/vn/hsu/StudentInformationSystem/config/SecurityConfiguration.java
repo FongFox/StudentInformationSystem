@@ -31,11 +31,26 @@ public class SecurityConfiguration {
     @Value("${fongfox.jwt.base64-secret}")
     private String jwtKey;
 
+    private SecretKey getSecretKey() {
+        byte[] keyBytes = Base64.from(jwtKey).decode();
+        return new SecretKeySpec(
+                keyBytes, 0,
+                keyBytes.length,
+                SecurityUtils.JWT_ALGORITHM.getName()
+        );
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Provides a JwtEncoder bean that encodes JWT tokens using the secret key.
+     * Used when creating JWT access or refresh tokens.
+     *
+     * @return a JwtEncoder configured with the secret signing key.
+     */
     @Bean
     public JwtEncoder jwtEncoder() {
         return new NimbusJwtEncoder(
@@ -43,18 +58,12 @@ public class SecurityConfiguration {
         );
     }
 
-    @Bean
-    public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        grantedAuthoritiesConverter.setAuthorityPrefix("");
-        grantedAuthoritiesConverter.setAuthoritiesClaimName("fongfox");
-
-        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
-        return jwtAuthenticationConverter;
-    }
-
-
+    /**
+     * Provides a JwtDecoder bean that decodes and validates incoming JWT tokens
+     * using the secret key. This is used by Spring Security to verify tokens in requests.
+     *
+     * @return a JwtDecoder configured with the secret signing key.
+     */
     @Bean
     public JwtDecoder jwtDecoder() {
         NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(
@@ -69,6 +78,24 @@ public class SecurityConfiguration {
         };
     }
 
+    /**
+     * Provides a JwtAuthenticationConverter bean that extracts user roles or authorities
+     * from JWT claims and converts them into a Spring Security Authentication object.
+     *
+     * @return a JwtAuthenticationConverter used during token validation.
+     */
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        grantedAuthoritiesConverter.setAuthorityPrefix("");
+        grantedAuthoritiesConverter.setAuthoritiesClaimName("student");
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
+
+        return jwtAuthenticationConverter;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(
             HttpSecurity http,
@@ -76,9 +103,10 @@ public class SecurityConfiguration {
     ) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                         authz -> authz
-                                .requestMatchers("/api/hello", "/api/auth/login").permitAll()
+                                .requestMatchers("/api/hello", "/api/v1/auth/login", "/api/v1/auth/refresh").permitAll()
                                 .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer((oauth2) -> oauth2
@@ -97,14 +125,5 @@ public class SecurityConfiguration {
                 );
         return http.build();
     }
-
-    private SecretKey getSecretKey() {
-        byte[] keyBytes = Base64.from(jwtKey).decode();
-        return new SecretKeySpec(
-                keyBytes, 0,
-                keyBytes.length,
-                SecurityUtils.JWT_ALGORITHM.getName()
-        );
-    }
-
+    
 }
