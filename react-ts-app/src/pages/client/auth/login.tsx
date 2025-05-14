@@ -1,23 +1,38 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import type { FormProps } from 'antd';
-import { Form, Input, Button, Card } from 'antd';
+import { Form, Input, Button, Card, App } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import logo from 'assets/logo.png';
+import { LoginAPI } from '@/services/api';
 
 type FieldType = {
-    username?: string;
-    password?: string;
+    username: string;
+    password: string;
 };
 
 const LoginPage = () => {
     const [isSubmit, setIsSubmit] = useState(false);
+    const { notification } = App.useApp();
+    const navigate = useNavigate();
 
-    const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-        console.log('Success:', values);
-    };
+    const onFinish: FormProps<FieldType>['onFinish'] = async (values) => {
+        setIsSubmit(true);
 
-    const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-        console.log('Failed:', errorInfo);
+        const { username, password } = values;
+        // console.log(`Check value: ${username} ${password}`);
+
+        const res = await LoginAPI(username, password);
+        if (res?.data) {
+            localStorage.setItem('access_token', res.data.accessToken);
+            notification.success({ message: "Đăng nhập thành công!" });
+            navigate("/");
+        }
+        else {
+            notification.error({ message: "Đăng nhập thất bại!" })
+        }
+
+        setIsSubmit(false);
     };
 
     return (
@@ -36,7 +51,6 @@ const LoginPage = () => {
                     name="login"
                     layout="vertical"
                     onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
                     autoComplete="off"
                 >
                     {/* Username */}

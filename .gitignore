@@ -12,3 +12,7 @@ spring-boot-app-refactor
 spring-boot-app/src/main/resources/application-prod.properties
 
 SIS-ERD.pgerd
+
+react-ts-app/.env.development
+
+react-ts-app/.env.production
