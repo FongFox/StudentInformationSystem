@@ -36,7 +36,23 @@ public class AuthController {
     }
 
     @PostMapping("login")
-    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<LoginResponse> login(
+            @CookieValue(name = "refreshToken", required = false) String oldToken,
+            @Valid @RequestBody LoginRequest loginRequest
+    ) {
+        // Nếu có cookie cũ, clear nó trước
+        HttpHeaders headers = new HttpHeaders();
+        if (oldToken != null) {
+            ResponseCookie clearOld = ResponseCookie.from("refreshToken", "")
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .maxAge(0)
+                    .build();
+            headers.add(HttpHeaders.SET_COOKIE, clearOld.toString());
+        }
+
+        // ————— Thực hiện authentication giống trước —————
         //Nạp input gồm username/password vào Security
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginRequest.getUsername(), loginRequest.getPassword()
@@ -65,7 +81,7 @@ public class AuthController {
         //update student token
         this.studentService.handleUpdateStudentToken(refreshToken, loginRequest.getUsername());
 
-        //set response cookie
+        //set new response cookie
         ResponseCookie responseCookie = ResponseCookie
                 .from("refreshToken", refreshToken)
                 .httpOnly(true)

@@ -1,5 +1,6 @@
 package vn.hsu.StudentInformationSystem.service.impl;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,7 +22,12 @@ public class UserDetailsCustomImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Student student = this.studentService.handleFetchStudentByUsername(username);
+        Student student;
+        try {
+            student = studentService.handleFetchStudentByUsername(username);
+        } catch (EntityNotFoundException ex) {
+            throw new UsernameNotFoundException("User with username/password not found");
+        }
 
         return new User(
                 student.getUsername(),
