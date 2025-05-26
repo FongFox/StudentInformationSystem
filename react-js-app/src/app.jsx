@@ -1,8 +1,13 @@
 import {Outlet} from "react-router-dom";
+import AppLayout from "components/app.layout.jsx";
 
 const App = () => {
-    return(
-        <Outlet/>
+    return (
+        <>
+            <AppLayout>
+                <Outlet/>
+            </AppLayout>
+        </>
     );
 }
 

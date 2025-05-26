@@ -1,1 +1,22 @@
 @import "tailwindcss";
+
+/* sidebar nền xanh đậm */
+.ant-layout-sider {
+    background-color: #002D72 !important;
+}
+
+/* header nền vàng nhạt */
+.ant-layout-header {
+    background-color: #CDA869 !important;
+}
+
+/* menu selected nền vàng, chữ trắng */
+.ant-menu-dark .ant-menu-item-selected {
+    background-color: #CDA869 !important;
+    color: #fff !important;
+}
+
+/* hover menu lên sáng nhẹ */
+.ant-menu-dark .ant-menu-item:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
