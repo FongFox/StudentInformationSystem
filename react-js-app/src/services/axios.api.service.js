@@ -12,3 +12,9 @@ export const RefreshAccountAPI = async () => {
 
     return await axios.get(backendURL);
 }
+
+export const FetchAnnouncementsAPI = async () => {
+    const backendURL = "/api/v1/students/me/announcement";
+
+    return await axios.get(backendURL);
+}

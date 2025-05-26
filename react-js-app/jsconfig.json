@@ -6,8 +6,7 @@
       "assets/*":     ["src/assets/*"],
       "pages/*":      ["src/pages/*"],
       "components/*":      ["src/components/*"],
-      "services/*":   ["src/services/*"],
-      "context/*":    ["src/context/*"]
+      "services/*":   ["src/services/*"]
     }
   },
   "include": ["src"]
