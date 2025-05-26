@@ -1,13 +1,9 @@
-import {Route, Routes} from "react-router-dom";
-import LoginPage from "pages/login.page.jsx";
+import {Outlet} from "react-router-dom";
 
-export default function App() {
-  return (
-      <Routes>
-        <Route index element={<div>Hello world!</div>}/>
-
-        {/* Public Routes: login page */}
-        <Route path="login" element={<LoginPage />}/>
-      </Routes>
-  );
+const App = () => {
+    return(
+        <Outlet/>
+    );
 }
+
+export default App;

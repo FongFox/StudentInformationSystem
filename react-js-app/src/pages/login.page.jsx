@@ -1,50 +1,50 @@
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
-
 import {App, Button, Card, Form, Input} from "antd";
 import {LockOutlined, UserOutlined} from "@ant-design/icons";
 
 import logo from 'assets/logo.png';
-import {LoginApi} from "services/axios.api.service.js";
+import {LoginAPI} from "services/axios.api.service.js";
+import {AppContext} from "@/app.context.jsx";
 
-export default function LoginPage () {
-    const [isLoading, setIsLoading] = useState(false);
-    const [student, setStudent] = useState(null);
+const LoginPage = () => {
     const navigate = useNavigate();
     const {notification} = App.useApp();
-    let statusCode = null;
+    const {setProfile} = useContext(AppContext);
+    const [isLoading, setIsLoading] = useState(false);
 
     const onFinish = async (values) => {
         setIsLoading(true);
-        // Do something in here
+
+        const {username, password} = values;
         try {
-            const response = await LoginApi(values.username, values.password);
-            localStorage.setItem("access_token", response.data.accessToken);
-            setStudent(response.data.studentProfileResponse);
+            const responseData = await LoginAPI(username, password);
+            if (responseData) {
+                localStorage.setItem("access_token", responseData.accessToken);
+                setProfile(responseData.studentProfileResponse);
 
-            statusCode = response.status;
-            notification.success({
-                message: response.status,
-                description: "Đăng nhập thành công!"
-            });
-        } catch (error) {
-            statusCode = error.status;
-            notification.error({
-                message: error.status,
-                description: "Đăng nhập thất bại!"
-            });
-        } finally {
-            setIsLoading(false);
-            if (statusCode < 400) {
+                notification.success({
+                    message: "Đăng nhập thành công!",
+                });
+
+                setIsLoading(false);
                 navigate("/");
+            } else {
+                notification.error({
+                    message: "Đăng nhập thất bại!",
+                });
+
+                setIsLoading(false);
             }
+        } catch (err) {
+            notification.error({
+                message: "Lỗi ngoài dự tính!",
+            });
+            console.log(err);
+
+            setIsLoading(false);
         }
-
-    };
-
-    const onFinishFailed = (errorInfo) => {
-        console.log('Failed:', errorInfo);
-    };
+    }
 
     return (
         <div className="min-h-screen flex items-center justify-center bg-white p-4">
@@ -62,7 +62,6 @@ export default function LoginPage () {
                     name="login"
                     layout="vertical"
                     onFinish={onFinish}
-                    onFinishFailed={onFinishFailed}
                     autoComplete="off"
                 >
                     {/* Username */}
@@ -109,3 +108,5 @@ export default function LoginPage () {
         </div>
     );
 }
+
+export default LoginPage;
