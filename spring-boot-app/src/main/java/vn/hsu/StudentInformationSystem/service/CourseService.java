@@ -16,6 +16,8 @@ public interface CourseService {
      */
     List<Course> handleFetchCoursesByStudentAndSemesterCode(Long studentId, Long semesterCode);
 
+    List<Course> handleFetchCoursesGradeByStudent(Long studentId);
+
     /**
      * Lấy khóa + ngày, giờ kiểm tra theo studentId và semesterCode
      */

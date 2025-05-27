@@ -16,6 +16,8 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
      */
     List<Course> findAllByStudentIdAndSemesterId(Long studentId, Long semesterId);
 
+    List<Course> findAllByStudentId(Long studentId);
+
     /**
      * Lấy tất cả các khóa của 1 sinh viên trong 1 học kỳ
      * Đầu vào là student & course
