@@ -12,6 +12,7 @@ import HomePage from "pages/home.page.jsx";
 import {AppProvider} from "@/app.context.jsx";
 import ChangePasswordPage from "pages/change-password.page.jsx";
 import GradePage from "pages/grade.page.jsx";
+import PhotocopyPage from "pages/photocopy.page.jsx";
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -30,6 +31,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                                     <Route index element={<HomePage/>}/>
                                     <Route path="pwd" element={<ChangePasswordPage/>}/>
                                     <Route path="grades" element={<GradePage/>}/>
+                                    <Route path="photocopy" element={<PhotocopyPage/>}/>
                                 </Route>
                             </Route>
 
