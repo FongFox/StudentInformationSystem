@@ -45,7 +45,7 @@ public class StudentServiceImpl implements StudentService {
         Optional<Student> studentOptional = this.studentRepository.findByUsername(username);
 
         return studentOptional.orElseThrow(
-                () -> new EntityNotFoundException("Student with username not found")
+                () -> new EntityNotFoundException("Student with username/password not found")
         );
     }
 
