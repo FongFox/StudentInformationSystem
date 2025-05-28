@@ -1,46 +1,34 @@
-import {Alert, Card, Col, Flex, Row, Table, Typography} from "antd";
+import {Alert, Card, Col, Flex, Row, Select, Typography} from "antd";
 import {useEffect, useState} from "react";
-import {FetchPhotocopyAPI} from "services/axios.api.service.js";
+import {FetchSemesterAPI} from "services/axios.api.service.js";
 import {PacmanLoader} from "react-spinners";
+import ExamTable from "components/exam.table.jsx";
 
-const PhotocopyPage = () => {
+const ExamPage = () => {
     const {Title} = Typography;
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [photocopyBalance, setPhotocopyBalance] = useState(null);
-    const [photocopyTransaction, setPhotocopyTransaction] = useState([]);
+    const [semesterList, setSemesterList] = useState([]);
+    const [semester, setSemester] = useState(null);
 
     useEffect(() => {
         const handleFetchData = async () => {
-            const token = localStorage.getItem("access_token");
-            if (token) {
-                const responseData = await FetchPhotocopyAPI();
+            try {
+                const responseData = await FetchSemesterAPI();
                 if (responseData) {
-                    setPhotocopyBalance(responseData.photocopyBalance);
-                    setPhotocopyTransaction(responseData.photocopyTransactionDTOList);
+                    setSemesterList(responseData);
                 } else {
                     setError(responseData.error);
                 }
+            } catch (err) {
+                setError(err.message || "Lỗi khi tải danh sách học kỳ");
+            } finally {
+                setIsLoading(false);
             }
-
-            setIsLoading(false);
         }
 
         handleFetchData();
     }, []);
-
-    const columns = [
-        {
-            title: 'Ngày',
-            dataIndex: 'date',
-            key: 'date',
-        },
-        {
-            title: 'Chi phí',
-            dataIndex: 'amount',
-            key: 'amount',
-        }
-    ];
 
     if (isLoading) {
         return (
@@ -59,15 +47,25 @@ const PhotocopyPage = () => {
             <Col span={24}>
                 <Card>
                     <Flex justify="flex-start" align="center">
-                        <Title level={3}>Photocopy</Title>
+                        <Title level={3}>Lịch kiểm tra</Title>
                     </Flex>
                 </Card>
             </Col>
 
             <Col span={24}>
                 <Card
-                    title="Lịch sử giao dịch photocopy"
-                    extra={<div>Số tiền còn lại: {photocopyBalance}</div>}
+                    title="Danh sách lịch kiểm tra cuối kỳ"
+                    extra={
+                        <Select
+                            placeholder="Chọn học kỳ"
+                            style={{width: 200}}
+                            value={semester}
+                            onChange={setSemester}
+                            allowClear
+                            options={semesterList.map(sem => ({value: sem.code, label: sem.code}))}
+                            onSelect={(value) => {setSemester(value)}}
+                        />
+                    }
                     variant={false}
                     style={{
                         display: 'flex',
@@ -82,11 +80,11 @@ const PhotocopyPage = () => {
                         }
                     }}
                 >
-                    <Table columns={columns} dataSource={photocopyTransaction} pagination={false}/>
+                    <ExamTable semester={semester}/>
                 </Card>
             </Col>
         </Row>
     );
 }
 
-export default PhotocopyPage;
+export default ExamPage;

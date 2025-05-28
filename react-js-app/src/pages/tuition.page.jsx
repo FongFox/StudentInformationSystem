@@ -1,23 +1,21 @@
 import {Alert, Card, Col, Flex, Row, Table, Typography} from "antd";
 import {useEffect, useState} from "react";
-import {FetchPhotocopyAPI} from "services/axios.api.service.js";
+import {FetchTuitionAPI} from "services/axios.api.service.js";
 import {PacmanLoader} from "react-spinners";
 
-const PhotocopyPage = () => {
+const TuitionPage = () => {
     const {Title} = Typography;
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [photocopyBalance, setPhotocopyBalance] = useState(null);
-    const [photocopyTransaction, setPhotocopyTransaction] = useState([]);
+    const [tuitionList, setTuitionList] = useState([]);
 
     useEffect(() => {
         const handleFetchData = async () => {
             const token = localStorage.getItem("access_token");
             if (token) {
-                const responseData = await FetchPhotocopyAPI();
+                const responseData = await FetchTuitionAPI();
                 if (responseData) {
-                    setPhotocopyBalance(responseData.photocopyBalance);
-                    setPhotocopyTransaction(responseData.photocopyTransactionDTOList);
+                    setTuitionList(responseData);
                 } else {
                     setError(responseData.error);
                 }
@@ -31,15 +29,30 @@ const PhotocopyPage = () => {
 
     const columns = [
         {
-            title: 'Ngày',
-            dataIndex: 'date',
-            key: 'date',
+            title: 'Học kỳ',
+            dataIndex: 'semesterCode',
+            key: 'semesterCode',
         },
         {
-            title: 'Chi phí',
-            dataIndex: 'amount',
-            key: 'amount',
-        }
+            title: 'Tổng chi phí',
+            dataIndex: 'total',
+            key: 'total',
+        },
+        {
+            title: 'Đã trả',
+            dataIndex: 'paid',
+            key: 'paid',
+        },
+        {
+            title: 'Tiền dư',
+            dataIndex: 'refund',
+            key: 'refund',
+        },
+        {
+            title: 'Tiền còn lại',
+            dataIndex: 'balance',
+            key: 'balance',
+        },
     ];
 
     if (isLoading) {
@@ -59,15 +72,14 @@ const PhotocopyPage = () => {
             <Col span={24}>
                 <Card>
                     <Flex justify="flex-start" align="center">
-                        <Title level={3}>Photocopy</Title>
+                        <Title level={3}>Học phí</Title>
                     </Flex>
                 </Card>
             </Col>
 
             <Col span={24}>
                 <Card
-                    title="Lịch sử giao dịch photocopy"
-                    extra={<div>Số tiền còn lại: {photocopyBalance}</div>}
+                    title="Danh sách học phí"
                     variant={false}
                     style={{
                         display: 'flex',
@@ -82,11 +94,11 @@ const PhotocopyPage = () => {
                         }
                     }}
                 >
-                    <Table columns={columns} dataSource={photocopyTransaction} pagination={false}/>
+                    <Table columns={columns} dataSource={tuitionList} pagination={false}/>
                 </Card>
             </Col>
         </Row>
     );
 }
 
-export default PhotocopyPage;
+export default TuitionPage;

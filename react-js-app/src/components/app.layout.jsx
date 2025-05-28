@@ -10,7 +10,7 @@ import {
     LogoutOutlined,
     MenuOutlined,
     FileTextOutlined,
-    PrinterOutlined,
+    PrinterOutlined, TransactionOutlined, BookOutlined, InfoCircleOutlined,
 } from '@ant-design/icons';
 
 import logoText from 'assets/logo-text-white.png';
@@ -24,23 +24,14 @@ const menuItems = [
     {key: '/pwd', icon: <KeyOutlined/>, label: 'Đổi mật khẩu'},
     {type: 'group', label: 'HỌC TẬP'},
     {key: '/grades', icon: <FileTextOutlined/>, label: 'Xem điểm'},
+    {key: '/exam', icon: <FileTextOutlined/>, label: 'Lịch kiểm tra'},
     {type: 'group', label: 'TIỆN ÍCH'},
-    {key: '/photocopy', icon: <PrinterOutlined />, label: 'Tài khoản photocopy'},
+    {key: '/photocopy', icon: <PrinterOutlined/>, label: 'Tài khoản photocopy'},
+    {key: '/tuition', icon: <TransactionOutlined/>, label: 'Học phí'},
     {type: 'group', label: 'THÔNG TIN CẦN BIẾT'},
-    {key: '/contact', icon: <ContactsOutlined/>, label: 'Liên hệ'}
-    // {key: '/learning', icon: <BookOutlined/>, label: 'Học tập',
-    //     children: [
-    //         { key: '/learning/reg-results', label: 'Kết quả ĐKMH' },
-    //         { key: '/learning/timetable',   label: 'Thời khóa biểu' },
-    //         { key: '/learning/attendance',  label: 'Chuyên cần' },
-    //         { key: '/learning/exams',       label: 'Lịch thi' },
-    //         { key: '/learning/grades',      label: 'Xem Điểm' },
-    //         { key: '/learning/tuition',     label: 'Học phí' },
-    //         { key: '/learning/pe',          label: 'GD Thể chất' },
-    //         { key: '/learning/events',      label: 'Sự kiện tham gia' },
-    //         { key: '/learning/faq',         label: 'Hỏi đáp văn bản' },
-    //     ],
-    // },
+    {key: 'about-us', icon: <InfoCircleOutlined/>, label: 'Về Hoa Sen'},
+    {key: 'student-handbook', icon: <BookOutlined/>, label: 'Sổ tay sinh viên'},
+    {key: 'contact', icon: <ContactsOutlined/>, label: 'Liên hệ'}
 ];
 
 const AppLayout = (props) => {
@@ -51,6 +42,36 @@ const AppLayout = (props) => {
     const onMenuClick = async (props) => {
         // eslint-disable-next-line react/prop-types
         const {key} = props;
+
+        if (key === 'student-handbook') {
+            // mở link ngoài ở tab mới :contentReference[oaicite:4]{index=4}
+            window.open(
+                'https://www.hoasen.edu.vn/so-tay-sinh-vien/',
+                '_blank',
+                'noopener,noreferrer'
+            );
+            return;
+        }
+
+        if (key === 'about-us') {
+            // mở link ngoài ở tab mới :contentReference[oaicite:4]{index=4}
+            window.open(
+                'https://www.hoasen.edu.vn/',
+                '_blank',
+                'noopener,noreferrer'
+            );
+            return;
+        }
+
+        if (key === 'contact') {
+            // mở link ngoài ở tab mới :contentReference[oaicite:4]{index=4}
+            window.open(
+                'https://www.hoasen.edu.vn/lien-he/',
+                '_blank',
+                'noopener,noreferrer'
+            );
+            return;
+        }
 
         if (key === 'logout') {
             try {
@@ -73,7 +94,6 @@ const AppLayout = (props) => {
 
     const avatarMenu = [
         {key: '/profile', label: 'Thông tin cá nhân'},
-        // {key: '/settings', label: 'Cài đặt'},
         {type: 'divider'},
         {key: 'logout', label: 'Đăng xuất'}
     ];

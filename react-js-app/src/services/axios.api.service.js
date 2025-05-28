@@ -37,3 +37,27 @@ export const FetchGradesAPI = async () => {
 
     return await axios.get(backendURL);
 }
+
+export const FetchPhotocopyAPI = async () => {
+    const backendURL = "/api/v1/students/me/photocopy";
+
+    return await axios.get(backendURL);
+}
+
+export const FetchTuitionAPI = async () => {
+    const backendURL = "/api/v1/students/me/tuition";
+
+    return await axios.get(backendURL);
+}
+
+export const FetchSemesterAPI = async () => {
+    const backendURL = "/api/v1/students/me/semester";
+
+    return await axios.get(backendURL);
+}
+
+export const FetchCourseExamAPI = async (semester) => {
+    const backendURL = `/api/v1/students/me/exam/${semester}`;
+
+    return await axios.get(backendURL);
+}
