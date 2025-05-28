@@ -93,8 +93,8 @@ const AppLayout = (props) => {
     };
 
     const avatarMenu = [
-        {key: '/profile', label: 'Thông tin cá nhân'},
-        {type: 'divider'},
+        // {key: '/profile', label: 'Thông tin cá nhân'},
+        // {type: 'divider'},
         {key: 'logout', label: 'Đăng xuất'}
     ];
 
