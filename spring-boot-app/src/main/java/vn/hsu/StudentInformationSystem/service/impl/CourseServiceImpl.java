@@ -50,6 +50,11 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    public List<Course> handleFetchCoursesGradeByStudent(Long studentId) {
+        return courseRepository.findAllByStudentId(studentId);
+    }
+
+    @Override
     public List<Course> handleFetchExamScheduleByStudentAndSemesterCode(Long studentId, long semesterCode) {
         //1. Lấy tất cả courses cho student & semester
         List<Course> courseList = handleFetchCoursesByStudentAndSemesterCode(studentId, semesterCode);

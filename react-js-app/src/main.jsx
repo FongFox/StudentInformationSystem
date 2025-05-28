@@ -10,6 +10,11 @@ import LoginPage from "pages/login.page.jsx";
 import ProtectedRoute from "@/protect.route.jsx";
 import HomePage from "pages/home.page.jsx";
 import {AppProvider} from "@/app.context.jsx";
+import ChangePasswordPage from "pages/change-password.page.jsx";
+import GradePage from "pages/grade.page.jsx";
+import PhotocopyPage from "pages/photocopy.page.jsx";
+import TuitionPage from "pages/tuition.page.jsx";
+import ExamPage from "pages/exam.page.jsx";
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -26,6 +31,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
                             <Route element={<ProtectedRoute/>}>
                                 <Route path="/" element={<App/>}>
                                     <Route index element={<HomePage/>}/>
+                                    <Route path="pwd" element={<ChangePasswordPage/>}/>
+                                    <Route path="grades" element={<GradePage/>}/>
+                                    <Route path="photocopy" element={<PhotocopyPage/>}/>
+                                    <Route path="tuition" element={<TuitionPage/>}/>
+                                    <Route path="exam" element={<ExamPage/>}/>
                                 </Route>
                             </Route>
 

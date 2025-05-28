@@ -1,12 +1,13 @@
 import {Alert, Table} from 'antd';
 import {useEffect, useState} from "react";
-import {FetchAnnouncementsAPI, RefreshAccountAPI} from "services/axios.api.service.js";
+import {FetchAnnouncementsAPI} from "services/axios.api.service.js";
 import {PacmanLoader} from "react-spinners";
 
 const AnnouncementTable = (props) => {
     const [data, setData] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+
     // eslint-disable-next-line react/prop-types
     const { category } = props;
 

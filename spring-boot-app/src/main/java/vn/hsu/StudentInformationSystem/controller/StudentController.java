@@ -113,6 +113,30 @@ public class StudentController {
         return ResponseEntity.status(HttpStatus.OK).body("Password Updated!");
     }
 
+    @GetMapping("grades")
+    public ResponseEntity<List<CourseGradeResponse>> fetchStudentCourseGrade() {
+        // Extract and validate user
+        String username = SecurityUtils.getCurrentUserLogin()
+                .orElseThrow(() -> new EntityNotFoundException("User not authenticated!"));
+
+        // Fetch student entity
+        Student student = this.studentService.handleFetchStudentByUsername(username);
+
+        // Fetch courses + grades
+        List<Course> courseList = this.courseService.handleFetchCoursesGradeByStudent(student.getId());
+
+        // Map to DTOs
+        List<CourseGradeResponse> courseGradeResponseList = new ArrayList<>();
+        for (Course course : courseList) {
+            courseGradeResponseList.add(this.courseMapper.toDto(course));
+        }
+
+        // 5. Return 200 OK with the DTO list
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(courseGradeResponseList);
+    }
+
     /**
      * GET  /api/v1/students/me/grade/{semesterCode}
      * <p>
@@ -129,8 +153,10 @@ public class StudentController {
      * </ul>
      * @throws EntityNotFoundException if authentication fails
      */
-    @GetMapping("grade/{semesterCode}")
-    public ResponseEntity<List<CourseGradeResponse>> fetchStudentCourseGrade(@PathVariable("semesterCode") long semesterCode) {
+    @GetMapping("grades/{semesterCode}")
+    public ResponseEntity<List<CourseGradeResponse>> fetchStudentCourseGradeFilteredBySemester(
+            @PathVariable("semesterCode") long semesterCode
+    ) {
         // Extract and validate user
         String username = SecurityUtils.getCurrentUserLogin()
                 .orElseThrow(() -> new EntityNotFoundException("User not authenticated!"));
