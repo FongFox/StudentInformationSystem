@@ -1,99 +1,74 @@
 # Student Information System
 
-This is a full-stack Student Information System project built with:
+A lightweight student portal to:
 
-- 🎯 **Frontend**: React + TypeScript + Vite
-- 🚀 **Backend**: Spring Boot (Java) + PostgreSQL (e.g. Supabase)
+- Update password
 
----
+- View Grades, view announcement & event
 
-## 📁 Project Structure
+- View exam schudule with semester
 
-```
-StudentInformationSystem/
-├── react-ts-app/       # Frontend source code
-├── spring-boot-app/    # Backend source code
-```
+- Check Exam Schedules
 
----
+- Track Tuition Payments
 
-## 🧩 Tech Stack
+- Track Photocopy Transaction & Balance
 
-### Frontend (`react-ts-app`)
-
-- React 18
-- TypeScript
-- Vite
-- Tailwind CSS (if added)
-
-### Backend (`spring-boot-app`)
-
-- Spring Boot
-- Gradle (Kotlin DSL)
-- PostgreSQL (e.g. via Supabase)
-- RESTful API
+Built with a RESTful API, JWT security, and PostgreSQL.
 
 ---
 
-## 🚀 Getting Started
+## Tech Stack
 
-### 🔧 Backend (Spring Boot)
+- **Backend**: Java, Spring Boot (Rest API), Gradle (Kotlin)
 
-1. Go to the backend directory:
-   
-   ```bash
-   cd spring-boot-app
-   ```
+- **Database**: PostgreSQL
 
-2. Add your database credentials in:
-   
-   ```
-   src/main/resources/application.properties
-   ```
-
-3. Build and run the Spring Boot app:
-   
-   ```bash
-   ./gradlew bootRun
-   ```
-
-By default, it runs at `http://localhost:8080`
+- **Frontend**: React, Vite, Ant Design, Axios
 
 ---
 
-### 🌐 Frontend (React)
+## Quick Start
 
-1. Go to the frontend directory:
+1. **Backend**
    
    ```bash
-   cd react-ts-app
+   cd .\spring-boot-app\
+   .\gradlew.bat bootRun
    ```
+   
+   Configure `application-dev.properties` for DB & JWT.
 
-2. Install dependencies:
+2. **Frontend**
    
    ```bash
-   npm install
-   ```
-
-3. Run the development server:
-   
-   ```bash
+   cd .\react-js-app\
+   npm i
    npm run dev
    ```
-
-By default, it runs at `http://localhost:5173`
-
-> You may set up a proxy to forward `/api` calls to the Spring Boot backend in `vite.config.ts`.
+   
+   Copy `.env.development` and set API_BASE_URL if needed.
 
 ---
 
-## 🌍 Environment Configuration
+## Scripts
 
-- Don't commit `application.properties` or `.env` files with real credentials.
-- Create a `.env` or `application-sample.properties` to share config templates.
+- `./gradlew bootRun` – start backend
+
+- `npm run dev` – start frontend
+
+- `npm run build` – build frontend
 
 ---
 
-## 📄 License
+## Account for testing
 
-This project is for educational and internship purposes.
+Account: phong.tgn02575; Password: 123456  
+Account: ngan.vtk02581; Password: 123456  
+Account: an.nv02576; Password: 123456
+
+---
+
+## License
+
+Educational use only.
