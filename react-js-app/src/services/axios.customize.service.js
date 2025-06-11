@@ -32,7 +32,7 @@ instance.interceptors.response.use(
         // Any status code that lie within the range of 2xx cause this function to trigger
         // Do something with response data
         return (response.data && response.data.data) ?
-            response.data.data : response;
+            response.data.data : response.data;
     },
     (error) => {
         // Any status codes that falls outside the range of 2xx cause this function to trigger
