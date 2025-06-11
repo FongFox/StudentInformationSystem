@@ -31,7 +31,7 @@ const menuItems = [
     {type: 'group', label: 'THÔNG TIN CẦN BIẾT'},
     {key: 'about-us', icon: <InfoCircleOutlined/>, label: 'Về Hoa Sen'},
     {key: 'student-handbook', icon: <BookOutlined/>, label: 'Sổ tay sinh viên'},
-    {key: 'contact', icon: <ContactsOutlined/>, label: 'Liên hệ'}
+    {key: 'contact', icon: <ContactsOutlined/>, label: 'Liên hệ'},
 ];
 
 const AppLayout = (props) => {
@@ -133,7 +133,8 @@ const AppLayout = (props) => {
                     onClick={onMenuClick}
                     items={[
                         ...menuItems,
-                        {type: 'divider'},
+                        // {type: 'divider'},
+                        {type: 'group', label: 'KHÁC'},
                         {key: 'logout', icon: <LogoutOutlined/>, label: 'Đăng xuất'},
                     ]}
                 />
