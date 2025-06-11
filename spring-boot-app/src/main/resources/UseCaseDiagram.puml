@@ -1,0 +1,31 @@
+@startuml
+left to right direction
+
+actor Student
+
+rectangle "Hệ thống SIS\n(REST API)" {
+  usecase UC_Login         as "Đăng nhập"
+  usecase UC_ViewAnnouncements as "Xem thông báo"
+  usecase UC_ViewEvents       as "Xem sự kiện"
+  usecase UC_ChangePassword   as "Cập nhật mật khẩu"
+  usecase UC_ViewTuition      as "Xem học phí"
+  usecase UC_ViewGrades       as "Xem điểm theo kỳ"
+  usecase UC_ViewExamSchedule as "Xem lịch thi"
+  usecase UC_ViewSemesters    as "Xem danh sách kỳ"
+  usecase UC_ViewPhotocopy    as "Tra cứu photocopy"
+  usecase UC_Logout           as "Đăng xuất"
+}
+
+Student --> UC_Login
+Student --> UC_Logout
+
+UC_ViewAnnouncements --> UC_Login : <<include>>
+UC_ViewEvents        --> UC_Login : <<include>>
+UC_ChangePassword    --> UC_Login : <<include>>
+UC_ViewTuition       --> UC_Login : <<include>>
+UC_ViewGrades        --> UC_Login : <<include>>
+UC_ViewExamSchedule  --> UC_Login : <<include>>
+UC_ViewSemesters     --> UC_Login : <<include>>
+UC_ViewPhotocopy     --> UC_Login : <<include>>
+
+@enduml

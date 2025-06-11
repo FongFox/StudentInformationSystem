@@ -1,0 +1,77 @@
+@startuml
+entity Student {
+    *id : long <<PK>>
+    --
+    code : long
+    fullName : String
+    photocopyBalance : long
+    username : String
+    password : String
+    refreshToken : String
+}
+
+entity Semester {
+    *id : long <<PK>>
+    --
+    code : long
+    year : int
+    shortDescription : String
+}
+
+entity Course {
+    *id : long <<PK>>
+    --
+    code : String
+    name : String
+    credit : int
+    price : long
+    grade : double
+    finalExamDate : LocalDate
+    finalExamTime : LocalTime
+    --
+    semester_id : long <<FK>>
+    student_id  : long <<FK>>
+}
+
+entity Tuition {
+    *id : long <<PK>>
+    --
+    total   : long
+    paid    : long
+    refund  : long
+    balance : long
+    isPaid  : boolean
+    --
+    semester_id : long <<FK>>
+    student_id  : long <<FK>>
+}
+
+entity PhotocopyTransaction {
+    *id : long <<PK>>
+    --
+    date   : LocalDate
+    amount : long
+    --
+    student_id : long <<FK>>
+}
+
+entity Announcement {
+    *id : long <<PK>>
+    --
+    title        : String
+    linkURL      : String
+    imageLinkUrl : String
+    category     : AnnounceCategory
+}
+
+enum AnnounceCategory {
+    ANNOUNCE
+    EVENT
+}
+
+Student  ||--o{ Course
+Semester ||--o{ Course
+Student  ||--o{ Tuition
+Semester ||--o{ Tuition
+Student  ||--o{ PhotocopyTransaction
+@enduml
