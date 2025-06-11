@@ -19,7 +19,7 @@ const LoginPage = () => {
         const {username, password} = values;
         try {
             const responseData = await LoginAPI(username, password);
-            if (responseData) {
+            if (responseData && responseData.data) {
                 localStorage.setItem("access_token", responseData.accessToken);
                 setProfile(responseData.studentProfileResponse);
 
